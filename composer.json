@@ -1,0 +1,29 @@
+{
+  "name": "agerecompany/zfc-data-grid",
+  "description": "Module for simple use and creating new Grid based on ZfcDatagrid",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "grid",
+    "zfc-datagrid",
+    "agere"
+  ],
+  "authors": [
+    {
+      "name": "Sergiy Popov",
+      "email": "popow.sergiy@gmail.com",
+      "homepage": "http://agere.com.ua/",
+      "role": "Developer"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=5.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Agere\\ZfcDataGrid\\": "src/",
+      "AgereTest\\ZfcDataGrid\\": "test/"
+    }
+  }
+}
