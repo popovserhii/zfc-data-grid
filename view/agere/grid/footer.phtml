@@ -1,0 +1,156 @@
+<?php 
+/* @var $paginator \Zend\Paginator\Paginator */
+$paginator = $this->paginator;
+?>
+<?php //if ($paginator->count() > 1) : ?>
+<!-- Start footer -->
+<div class="row-fluid row" id="<?php echo $this->gridId; ?>_pager">
+
+    <!-- mass actions -->
+    <div class="span3 col-md-3 col-sm-3" id="<?php echo $this->gridId; ?>_pager_left">
+        <?php 
+        foreach($this->massActions as $action){
+            /* @var $action \ZfcDatagrid\Action\Mass */
+            ?>
+            <a href="#" class="btn btn-default btn-xs massAction" data-url="<?php echo $action->getLink(); ?>">
+                <?php echo $this->translate($action->getTitle()); ?>
+            </a>
+            <?php
+        }
+        ?>
+    </div>
+    <!-- Pagination -->
+    <div class="span6 col-md-6 col-sm-6 text-center" id="<?php echo $this->gridId; ?>_pager_center">
+    </div>
+    <!-- Info -->
+    <div class="span3 col-md-3 col-sm-3 text-right" id="<?php echo $this->gridId; ?>_pager_right">
+        <?php echo $this->translate('Showing').' <span id="'.$this->gridId.'_currentItems"></span> '.$this->translate('of').' <span id="'.$this->gridId.'_totalItems"></span> '.$this->translate('items'); ?><br />
+        <?php echo $this->translate('Page') . ' <span id="'.$this->gridId.'_currentPage"></span> ' . $this->translate('of') . ' <span id="'.$this->gridId.'_totalPages"></span>'; ?>
+    </div>
+</div><!-- End footer -->
+<?php //endif; ?>
+
+<script>
+<?php $request = $this->current('request') ?>
+<?php if (!$request->isXmlHttpRequest()) : ?>
+    <?php $this->inlineScript()->captureStart(); ?>
+<?php endif; ?>
+
+jQuery( document ).ready(function($) {
+    $('#<?php echo $this->gridId; ?>_pager_left a.massAction').click( function() {
+    	var grid = $("#<?php echo $this->gridId; ?>");
+    	
+        $.post($(this).attr('data-url'), { '<?php echo $this->parameterNames['massIds']; ?>[]': grid.jqGrid('getGridParam','selarrrow') })
+        .done(function( data ) {
+        	grid.trigger('reloadGrid');
+        });
+    });
+});
+
+function <?php echo $this->gridId; ?>_loadPage(gridId, newPage){
+    jQuery('#' + gridId).trigger('reloadGrid',[{page: newPage}]);
+}
+
+function <?php echo $this->gridId; ?>_customPaginator(gridId){
+	
+	var myPageRefresh = function(e) {
+	    var newPage = jQuery(e.target).attr('data-page');
+        jQuery('#' + gridId).trigger('reloadGrid',[{page:newPage}]);
+	    e.preventDefault();
+	};
+    
+	var grid = jQuery('#' + gridId).jqGrid();
+	var currentPage = grid.getGridParam('page');
+	var totalPages = grid.getGridParam('lastpage');
+
+    jQuery('#' + gridId + '_currentItems').html(grid.getRowData().length);
+    jQuery('#' + gridId + '_totalItems').html(grid.getGridParam('records'));
+
+    jQuery('#' + gridId + '_currentPage').html(currentPage);
+    jQuery('#' + gridId + '_totalPages').html(totalPages);
+	
+	var html = '';
+	if(totalPages < 2){
+	    //only 1 page (or no page)
+	    html += '<li class="disabled"><a href="#">&laquo;</a></li>';
+	    html += '<li class="disabled"><a href="#">&lt;</a></li>';
+	    html += '<li class="active"><a href="#">1</a></li>';
+	    html += '<li class="disabled"><a href="#">&gt;</a></li>';
+	    html += '<li class="disabled"><a href="#">&raquo;</a></li>';
+	    html = '<div class="pagination"><ul class="pagination">' + html + '</ul></div>';
+	    
+	    return html;
+	}
+
+	//to first page
+    if(currentPage > 1){
+        html += '<li><a href="#" onclick="<?php echo $this->gridId; ?>_loadPage(\'' + gridId + '\', 1);">&laquo;</a></li>';
+    } else{
+    	html += '<li class="disabled"><a href="#">&laquo;</a></li>';
+    }
+
+    //one page left
+    if(currentPage > 1){
+        html += '<li><a href="#" onclick="<?php echo $this->gridId; ?>_loadPage(\'' + gridId + '\', ' + (currentPage - 1) + ');">&lt;</a></li>';
+    } else{
+    	html += '<li class="disabled"><a href="#">&lt;</a></li>';
+    }
+
+    //ported from  Zend\Paginator\ScrollingStyle\Sliding
+    var pageRange = 10;
+    if(pageRange > totalPages){
+        pageRange = totalPages;
+    }
+
+    var delta = Math.ceil(pageRange / 2);
+
+    var lowerBound;
+    var upperBound;
+    if(currentPage - delta > totalPages - pageRange){
+        lowerBound = totalPages - pageRange + 1;
+        upperBound = totalPages;
+    } else{
+        if(currentPage - delta < 0){
+            delta = currentPage;
+        }
+
+        var offset = currentPage - delta;
+        lowerBound = offset + 1;
+        upperBound = offset + pageRange;
+    }
+
+    var pageRangeStart = lowerBound;
+    var pageRangeEnd = upperBound;
+
+    //"normal" pages
+    for (usePage = pageRangeStart; usePage <= pageRangeEnd; usePage++) {
+
+        if(usePage != currentPage){
+     	   html += '<li><a href="#" onclick="<?php echo $this->gridId; ?>_loadPage(\'' + gridId + '\', ' + usePage + ');">' + usePage + '</a></li>';
+        } else{
+        	html += '<li class="active"><a href="#">' + usePage + '</a></li>';
+        }
+	}
+
+    //one page right
+    if(currentPage < totalPages){
+        html += '<li><a href="#" onclick="<?php echo $this->gridId; ?>_loadPage(\'' + gridId + '\', ' + (currentPage + 1) + ');">&gt;</a></li>';
+    } else{
+    	html += '<li class="disabled"><a href="#">&gt;</a></li>';
+    }
+
+    //to last page
+    if(currentPage < totalPages){
+        html += '<li><a href="#" onclick="<?php echo $this->gridId; ?>_loadPage(\'' + gridId + '\', ' + totalPages + ');">&raquo;</a></li>';
+    } else{
+    	html += '<li class="disabled"><a href="#">&raquo;</a></li>';
+    }
+    
+    html = '<div class="pagination"><ul class="pagination">' + html + '</ul></div>';
+    
+	return html;
+}
+<?php if (!$request->isXmlHttpRequest()) : ?>
+    <?php $this->inlineScript()->captureEnd(); ?>
+<?php endif; ?>
+</script>

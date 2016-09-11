@@ -1,0 +1,18 @@
+<?php 
+$url = $this->url(null, array(), array(), true);
+if($this->overwriteUrl != ''){
+    $url = $this->overwriteUrl;
+}
+
+$parametersAdd = '';
+foreach ($this->parameters as $name => $value) {
+    $parametersAdd .= '&' . $name . '=' . $value;
+}
+?>
+
+<?php foreach ($this->exportRenderers as $type => $name) : ?>
+    <?php $urlExport = $url . '?' . $this->generalParameterNames['rendererType'] . '=' . $type . $parametersAdd; ?>
+    <a class="btn btn-default btn-xs" href="<?= $urlExport ?>">
+        <?= $name ?>
+    </a>
+<?php endforeach ?>

@@ -1,0 +1,35 @@
+<?php /** @var Agere\Block\Block\Admin\Toolbar $toolbar */ ?>
+<?php //return ?>
+<?php $toolbar = $this->viewModel()->getCurrent()->getVariable('toolbar'); ?>
+<?php if (is_object($toolbar)) : ?>
+	<?php //\Zend\Debug\Debug::dump(get_class_methods($toolbar->getActionPanels())); die(__METHOD__) ?>
+	<?php //\Zend\Debug\Debug::dump(get_class($toolbar)); die(__METHOD__) ?>
+	<div class="row row-fluid clearfix toolbar">
+
+		<!-- Anything else (filter, ...) -->
+		<?php $actionPanels = $toolbar->getActionPanels(); ?>
+        <div class="span6 col-md-2">
+            <?php if ($actionPanels) : ?>
+                <?php //Here your can add global dropdown actions like "Add".<br /> ?>
+                <?php foreach ($actionPanels as $actionPanel) : ?>
+                    <?= $this->block()->render($actionPanel) ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+
+
+		<!-- Export buttons -->
+		<div class="span4 col-md-4">
+			<?php //Here are the enabled export types are shown<br /> ?>
+			<?php //Template: <code>zfc-datagrid/toolbar/export</code> ?>
+			<?php echo $this->partial('zfc-datagrid/toolbar/export');?>
+		</div>
+
+        <!-- Actions (add, ...) -->
+        <div class="span2 col-md-6">
+            <?php //Here your can add global actions like "Add".<br /> ?>
+            <?= $this->partial($toolbar->getButtonsTemplate(), ['block' => $toolbar]) ?>
+        </div>
+
+	</div>
+<?php endif; ?>
