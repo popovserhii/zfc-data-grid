@@ -37,6 +37,7 @@ class GridFactory implements AbstractFactoryInterface {
 		$om = $sm->get('Doctrine\ORM\EntityManager');
 		$gpm = $sm->get('ControllerPluginManager');
 		$vhm = $sm->get('ViewHelperManager');
+		$renderer = $sm->get('ViewRenderer');
         /** @var BlockPluginManager $bpm */
 		$bpm = $sm->get('BlockPluginManager');
 		$urlPlugin = $gpm->get('url');
@@ -97,7 +98,7 @@ class GridFactory implements AbstractFactoryInterface {
 
         $jqGridColumns = $vhm->get('jqgridColumns');
 
-		$gridBlock = new $className($grid, $jqGridColumns);
+		$gridBlock = new $className($grid, $route, $renderer);
 
 		/*if (isset($config['grid_block_config']['template_map']['grid/list'])
 			&& $config['grid_block_config']['template_map']['grid/list']

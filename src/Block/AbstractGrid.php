@@ -9,7 +9,6 @@
  */
 namespace Agere\ZfcDataGrid\Block;
 
-use Magere\Cart\Grid\Column\Action\AddToCart;
 use Zend\Stdlib\InitializableInterface;
 use Zend\View\Renderer\PhpRenderer;
 use ZfcDatagrid\Datagrid;
@@ -18,7 +17,7 @@ use ZfcDatagrid\Column\Style;
 use ZfcDatagrid\Column\Type;
 
 use Agere\ZfcDataGridPlugin\Column\Factory\ColumnFactory;
-use Agere\ZfcDataGrid\View\Helper\Columns as ColumnsHelper;
+//use Agere\ZfcDataGrid\View\Helper\Columns as ColumnsHelper;
 use Agere\Block\Block\Admin\Toolbar;
 
 abstract class AbstractGrid implements InitializableInterface
@@ -26,8 +25,10 @@ abstract class AbstractGrid implements InitializableInterface
     /** @var Datagrid */
     protected $dataGrid;
 
-    /** @var ColumnsHelper */
-    protected $columnsHelper;
+    protected $routeMatch;
+
+    /** @return PhpRenderer */
+    protected $viewRenderer;
 
     /** @var Toolbar */
     protected $toolbar;
@@ -57,19 +58,20 @@ abstract class AbstractGrid implements InitializableInterface
         ],*/
     ];
 
-    public function __construct(Datagrid $dataGrid, ColumnsHelper $columnsHelper)
+    public function __construct(Datagrid $dataGrid, $routeMatch, /*ColumnsHelper*/ $renderer)
     {
         $this->dataGrid = $dataGrid;
-        $this->columnsHelper = $columnsHelper;
+        $this->routeMatch = $routeMatch;
+        $this->viewRenderer = $renderer;
         $this->initToolbarCallback();
     }
 
-    public function setCustomColumnModelOptions($col, array $options)
+    /*public function setCustomColumnModelOptions($col, array $options)
     {
-        $this->getColumnsHelper()->setCustomColumnModelOption($col, $options);
+        $this->getViewRenderer()->setCustomColumnModelOption($col, $options);
 
         return $this;
-    }
+    }*/
 
     public function getId()
     {
@@ -229,9 +231,12 @@ abstract class AbstractGrid implements InitializableInterface
         return $this->dataGrid;
     }
 
-    public function getColumnsHelper()
+    /**
+     * @return PhpRenderer
+     */
+    public function getViewRenderer()
     {
-        return $this->columnsHelper;
+        return $this->viewRenderer;
     }
 
     public function getResponse()
@@ -241,42 +246,30 @@ abstract class AbstractGrid implements InitializableInterface
 
     public function generateLink($route, $key = null, $params = [])
     {
+        die(__METHOD__);
         $sm = $this->getServiceLocator();
 
         return new Column\Formatter\GenerateLink($sm, $route, $key, $params);
     }
 
-    public function getServiceLocator()
+    /*public function getServiceLocator()
     {
         static $sm;
         if (!$sm) {
-            $sm = $this->getColumnsHelper()->getServiceLocator()->getServiceLocator();
+            $sm = $this->getViewRenderer()->getServiceLocator()->getServiceLocator();
         }
 
         return $sm;
-    }
+    }*/
 
     public function getRouteMatch()
     {
-        static $routeMatch;
+        /*static $routeMatch;
         if (!$routeMatch) {
             $routeMatch = $this->getServiceLocator()->get('Application')->getMvcEvent()->getRouteMatch();
-        }
+        }*/
 
-        return $routeMatch;
-    }
-
-    /**
-     * @return PhpRenderer
-     */
-    public function getViewRenderer()
-    {
-        static $viewRenderer;
-        if (!$viewRenderer) {
-            $viewRenderer = $this->getServiceLocator()->get('ViewRenderer');
-        }
-
-        return $viewRenderer;
+        return $this->routeMatch;
     }
 
     public function setToolbar(Toolbar $toolbar)
