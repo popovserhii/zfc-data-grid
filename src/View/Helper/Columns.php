@@ -52,7 +52,7 @@ class Columns extends ZfcDatagridColumns {
 			 * Cellattr
 			 */
 			$rendererParameters = $column->getRendererParameters('jqGrid');
-			if (isset($rendererParameters['cellattr'])) {
+			/*if (isset($rendererParameters['cellattr'])) {
 				$options['cellattr'] = (string) $rendererParameters['cellattr'];
 			}
 			if (isset($rendererParameters['classes'])) {
@@ -60,6 +60,16 @@ class Columns extends ZfcDatagridColumns {
 			}
             if (isset($rendererParameters['editable'])) {
                 $options['editable'] = (bool) $rendererParameters['editable'];
+            }
+            if (isset($rendererParameters['deletable'])) {
+                $options['deletable'] = (bool) $rendererParameters['deletable'];
+            }*/
+
+            /**
+             * ColModel attributes
+             */
+            foreach ($rendererParameters as $option => $value) {
+                $options[$option] = $value;
             }
 
 
@@ -88,10 +98,10 @@ class Columns extends ZfcDatagridColumns {
 				$options['searchoptions'] = $searchoptions;
 			}
 
-			if ($customOpt = $this->getCustomColumnModelOption($column)) {
-				$options = array_merge($options, $customOpt);
+			//if ($customOpt = $this->getCustomColumnModelOption($column)) {
+			//	$options = array_merge($options, $customOpt);
 				//\Zend\Debug\Debug::dump($options); die(__METHOD__);
-			}
+			//}
 
 			$return[] = $this->buildColModel($options);
 		}
@@ -148,7 +158,7 @@ class Columns extends ZfcDatagridColumns {
 		return $value;
 	}
 
-	public function setCustomColumnModelOption($col, array $options) {
+	/*public function setCustomColumnModelOption($col, array $options) {
 		$this->columnModelOptions[$col->getUniqueId()] = $options;
 	}
 
@@ -158,6 +168,6 @@ class Columns extends ZfcDatagridColumns {
 		}
 
 		return false;
-	}
+	}*/
 
 }

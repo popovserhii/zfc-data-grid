@@ -251,7 +251,7 @@ function (value, options, rowObject) {
         iterator.count++;
 	}
 
-	//return '{hiddenHtml}' + '{$inputHtml}';
+	//return '{\$hiddenHtml}' + '{$inputHtml}';
 	return '{$inputHtml}';
 }
 FORMATTER_JS;

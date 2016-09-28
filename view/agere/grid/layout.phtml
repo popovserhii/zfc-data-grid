@@ -260,6 +260,8 @@ $(document).ready(function () {
         sortname: '<?php echo $this->activeParameters[$parameterNames['sortColumns']]; ?>',
         sortorder: '<?php echo $this->activeParameters[$parameterNames['sortDirections']]; ?>',
 
+        footerrow: <?= isset($this->gridFooterRow) ? (int) $this->gridFooterRow : 0 ?>,
+
         prmNames : {
             page: '<?php echo $parameterNames['currentPage']; ?>',
             rows: '<?php echo $parameterNames['itemsPerPage']; ?>',

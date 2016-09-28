@@ -58,20 +58,13 @@ abstract class AbstractGrid implements InitializableInterface
         ],*/
     ];
 
-    public function __construct(Datagrid $dataGrid, $routeMatch, /*ColumnsHelper*/ $renderer)
+    public function __construct(Datagrid $dataGrid, $routeMatch, $renderer)
     {
         $this->dataGrid = $dataGrid;
         $this->routeMatch = $routeMatch;
         $this->viewRenderer = $renderer;
         $this->initToolbarCallback();
     }
-
-    /*public function setCustomColumnModelOptions($col, array $options)
-    {
-        $this->getViewRenderer()->setCustomColumnModelOption($col, $options);
-
-        return $this;
-    }*/
 
     public function getId()
     {
@@ -105,8 +98,7 @@ abstract class AbstractGrid implements InitializableInterface
 
             $toolbar->addButtonsWrapperClass('pull-right');
             // add button "Create" if relative label set
-            !$this->getCreateButtonTitle()
-            || $toolbar->addButton('create', [
+            !$this->getCreateButtonTitle() || $toolbar->addButton('create', [
                 'label' => '+',
                 'title' => $this->getCreateButtonTitle(),
                 'href' => [
@@ -117,9 +109,9 @@ abstract class AbstractGrid implements InitializableInterface
                 ],
                 'class' => 'btn btn-success btn-md',
             ]);
+
             // add button "Back" if relative label set
-            !$this->getBackButtonTitle()
-            || $toolbar->addButton('back', [
+            !$this->getBackButtonTitle() || $toolbar->addButton('back', [
                 'label' => $this->getBackButtonTitle(),
                 'title' => $this->getBackButtonTitle(),
                 'href' => [
