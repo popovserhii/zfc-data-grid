@@ -66,6 +66,9 @@ abstract class AbstractGrid implements InitializableInterface
         $this->initToolbarCallback();
     }
 
+    public function init()
+    {}
+
     public function getId()
     {
         //return explode('_', $this->getDataGrid()->getId())[0];

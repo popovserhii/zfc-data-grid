@@ -10,11 +10,17 @@
 namespace Agere\ZfcDataGrid\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Filter\Word\CamelCaseToDash;
 use Zend\Stdlib\Exception;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Agere\Core\Service\DomainServiceInterface;
+use Magere\Entity\Model\Entity as Module;
 
+/**
+ * @method \Magere\Entity\Controller\Plugin\EntityPlugin entity()
+ * @method \Magere\Entity\Controller\Plugin\ModulePlugin module($context = null)
+ */
 class DataGridController extends AbstractActionController
 {
     /**
@@ -32,7 +38,7 @@ class DataGridController extends AbstractActionController
         return $this->domainService;
     }
 
-    public function editAction()
+    public function modifyAction()
     {
         if (!($request = $this->getRequest()) && !$request->isPost()) {
             return [];
@@ -48,10 +54,57 @@ class DataGridController extends AbstractActionController
         return $this->{$method}();
     }
 
-    public function delOperation()
+    public function editOperation()
     {
         $request = $this->getRequest();
         $route = $this->getEvent()->getRouteMatch();
+        $domainService = $this->getDomainService();
+
+        $om = $domainService->getObjectManager();
+        //$items = $domainService->getRepository()->findBy(['id' => explode(',', $request->getPost('id'))]);
+
+        $gridData = [];
+        foreach ($request->getPost() as $name => $value) {
+            if (in_array($name, ['id', 'oper'])) { // skip specialized keywords
+                continue;
+            }
+
+            $gridMnemo = strtolower((new CamelCaseToDash())->filter($route->getParam('grid')));
+            list($moduleMnemo, $field) = explode('_', strtolower((new CamelCaseToDash())->filter($name)));
+            if ($entityId = $request->getPost($moduleMnemo . '_id')) {
+                $gridData[$moduleMnemo][$entityId][$field] = $value;
+            } elseif ($gridMnemo === $moduleMnemo) {
+                $entityId = $request->getPost('id');
+                $gridData[$moduleMnemo][$entityId][$field] = $value;
+            }
+        }
+
+        $modules = $om->getRepository(Module::class)->findBy(['mnemo' => array_keys($gridData)]);
+        foreach ($modules as $module) {
+            foreach ($gridData[$module->getMnemo()] as $entityId => $entityData) {
+                $this->entity()->find($entityId, $module)->exchangeArray($entityData);
+            }
+        }
+
+        $om->flush();
+
+        /*if ($request->isXmlHttpRequest()) {
+            // only ajax processing
+            //$this->getResponse()->setContent(Json::encode('Покупатель успешно сохранен'));
+            $this->getResponse()->setContent('Edited items successfully updated');
+
+            return $this->getResponse();
+        }*/
+
+        return (new JsonModel([
+            'message' => 'Edited items successfully updated',
+        ]));
+    }
+
+    public function delOperation()
+    {
+        $request = $this->getRequest();
+        //$route = $this->getEvent()->getRouteMatch();
         $domainService = $this->getDomainService();
 
         $om = $domainService->getObjectManager();
@@ -62,12 +115,15 @@ class DataGridController extends AbstractActionController
         }
         $om->flush();
 
-        if ($request->isXmlHttpRequest()) {
+        /*if ($request->isXmlHttpRequest()) {
             // only ajax processing
             //$this->getResponse()->setContent(Json::encode('Покупатель успешно сохранен'));
             $this->getResponse()->setContent('Selected items successfully deleted');
 
             return $this->getResponse();
-        }
+        }*/
+        return (new JsonModel([
+            'message' => 'Edited items successfully updated',
+        ]));
     }
 }

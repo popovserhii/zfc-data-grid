@@ -39,7 +39,7 @@ class DataGridControllerFactory
 
         if (!($gridId = $route->getParam('grid'))) {
             throw new Exception\InvalidArgumentException(
-                'Route "grid" key must be set for correct work edit functionality'
+                'Route key "grid" must be set for correct work edit functionality'
             );
         }
 

@@ -82,7 +82,7 @@ class GridFactory implements AbstractFactoryInterface {
             'route' => 'default/wildcard',
             'params' => [
                 'controller' => 'data-grid',
-                'action' => 'edit',
+                'action' => 'modify',
             ]
         ];
         //$rendererOptions['navGridDel'] = true;
@@ -96,7 +96,7 @@ class GridFactory implements AbstractFactoryInterface {
 
 
 
-        $jqGridColumns = $vhm->get('jqgridColumns');
+        //$jqGridColumns = $vhm->get('jqgridColumns');
 
 		$gridBlock = new $className($grid, $route, $renderer);
 
