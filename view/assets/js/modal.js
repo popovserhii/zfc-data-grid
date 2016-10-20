@@ -14,8 +14,12 @@ $(document).on('click', '.modal .ui-jqgrid-btable tr', function (e) {
 	var rowId = grid.jqGrid('getGridParam', 'selrow');
 	var rowData = grid.getRowData(rowId);
 
-	$.data(document.body, 'agereSelectedRowData', rowData);
+	//$.data(document.body, 'agereSelectedRowData', rowData);
+	$.data(document.body, 'jqGrid.lastSelectedRowData', rowData);
 
+	if (elm.is('button')) {
+		return; // skip if click on row button
+	}
 
 	var idName = modal.attr('id').split('-')[0] + '_id';
 	// insert selected row id to form input by name
@@ -29,6 +33,7 @@ $(document).on('click', '.modal .ui-jqgrid-btable tr', function (e) {
 		var href = elmRefresh.data('href') + '/' + rowData[idName];
 		elmRefresh.data('href', href).trigger('refresh');
 	}
+
 	modal.modal('hide');
 
 	return false;

@@ -374,17 +374,18 @@ $(document).ready(function () {
         }
     });
 
-
-    grid_<?php echo $this->gridId; ?>.navGrid('#<?= $this->gridId ?>_pager', {
+    var navGridParameters = {
         edit: <?= isset($this->navGridEdit) ? (int) $this->navGridEdit : 0 ?>,
         add: <?= isset($this->navGridAdd) ? (int) $this->navGridAdd : 0 ?>,
         del: <?= isset($this->navGridDel) ? (int) $this->navGridDel : 0 ?>,
         refresh: <?= isset($this->navGridRefresh) ? (int) $this->navGridRefresh : 0 ?>,
         view: <?= isset($this->navGridView) ? (int) $this->navGridView : 0 ?>,
         search: <?= isset($this->navGridSearch) ? (int) $this->navGridSearch : 0 ?>,
-    });
+    };
+    grid_<?php echo $this->gridId; ?>.navGrid('#<?= $this->gridId ?>_pager', navGridParameters);
+    $.data(document.body, 'jqGrid.<?php echo $this->gridId; ?>.navGrid.parameters', navGridParameters);
 
-    grid_<?php echo $this->gridId; ?>.inlineNav('#<?= $this->gridId ?>_pager', {
+    var inlineNavParameters = {
         // the buttons to appear on the toolbar of the grid
         edit: <?= isset($this->inlineNavEdit) ? (int) $this->inlineNavEdit : 0 ?>,
         add: <?= isset($this->inlineNavAdd) ? (int) $this->inlineNavAdd : 0 ?>,
@@ -394,23 +395,24 @@ $(document).ready(function () {
             keys: true,
             // @see This code is available in grid.js
             /*aftersavefunc: function() {
-                console.log("aftersave fired for edit");
-                //var grid = $("#table");
-                //reloadgrid(grid);
-            }, //aftersavefunc
-            successfunc: function (val) {
-                console.log("successfunc fired for edit");
-                console.log(val);
-                if (val.statusText == 'OK') {
-                    //$(this).jqGrid('setGridParam', {datatype: 'json'}).trigger('reloadGrid');
-                }
-            }*/
+             console.log("aftersave fired for edit");
+             //var grid = $("#table");
+             //reloadgrid(grid);
+             }, //aftersavefunc
+             successfunc: function (val) {
+             console.log("successfunc fired for edit");
+             console.log(val);
+             if (val.statusText == 'OK') {
+             //$(this).jqGrid('setGridParam', {datatype: 'json'}).trigger('reloadGrid');
+             }
+             }*/
         },
         addParams: {
             keys: true
         }
-    });
-
+    };
+    grid_<?php echo $this->gridId; ?>.inlineNav('#<?= $this->gridId ?>_pager', inlineNavParameters);
+    $.data(document.body, 'jqGrid.<?php echo $this->gridId; ?>.inlineNav.parameters', inlineNavParameters);
 
     //grid_<?php echo $this->gridId; ?>.jqGrid("navGrid", "#<?= $this->gridId ?>_pager", {});
 
