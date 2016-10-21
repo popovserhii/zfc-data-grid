@@ -28,7 +28,10 @@
         <!-- Actions (add, ...) -->
         <div class="span2 col-md-6">
             <?php //Here your can add global actions like "Add".<br /> ?>
-            <?= $this->partial($toolbar->getButtonsTemplate(), ['block' => $toolbar]) ?>
+            <?= $this->partial(
+                $toolbar->getButtonsTemplate(),
+                $toolbar->setVariable('block', $toolbar)->getVariables()
+            ) ?>
         </div>
 
 	</div>
