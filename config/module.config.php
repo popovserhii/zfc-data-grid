@@ -4,6 +4,12 @@ namespace Agere\ZfcDataGrid;
 return [
     'assetic_configuration' => require_once 'assets.config.php',
 
+    'progress' => [
+        __NAMESPACE__ => [
+            //'pattern' => '',
+            'context' => Service\Progress\DataGridContext::class,
+        ]
+    ],
 
     'controllers' => [
         'aliases' => [
@@ -43,7 +49,9 @@ return [
 
 	'service_manager' => [
 		//'aliases' => [],
-		//'invokables' => [],
+		'invokables' => [
+            Service\Progress\DataGridContext::class => Service\Progress\DataGridContext::class,
+        ],
 		//'factories' => [],
 
         'abstract_factories' => [

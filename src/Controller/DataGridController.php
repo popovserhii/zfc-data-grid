@@ -15,7 +15,7 @@ use Zend\Stdlib\Exception;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Agere\Core\Service\DomainServiceInterface;
-use Magere\Entity\Model\Entity as Module;
+use Magere\Entity\Model\Entity;
 
 /**
  * @method \Magere\Entity\Controller\Plugin\EntityPlugin entity()
@@ -65,28 +65,33 @@ class DataGridController extends AbstractActionController
 
         $gridData = [];
         foreach ($request->getPost() as $name => $value) {
-            if (in_array($name, ['id', 'oper'])) { // skip specialized keywords
+            if (in_array($name, ['id', 'oper']) || (substr($name, -3, 3) === '_id')) { // skip specialized keywords
                 continue;
             }
 
             $gridMnemo = strtolower((new CamelCaseToDash())->filter($route->getParam('grid')));
             list($moduleMnemo, $field) = explode('_', strtolower((new CamelCaseToDash())->filter($name)));
-            if ($entityId = $request->getPost($moduleMnemo . '_id')) {
-                $gridData[$moduleMnemo][$entityId][$field] = $value;
+            if ($itemId = $request->getPost($moduleMnemo . '_id')) {
+                $gridData[$moduleMnemo][$itemId][$field] = $value;
             } elseif ($gridMnemo === $moduleMnemo) {
-                $entityId = $request->getPost('id');
-                $gridData[$moduleMnemo][$entityId][$field] = $value;
+                $itemId = $request->getPost('id');
+                $gridData[$moduleMnemo][$itemId][$field] = $value;
             }
         }
 
-        $modules = $om->getRepository(Module::class)->findBy(['mnemo' => array_keys($gridData)]);
-        foreach ($modules as $module) {
-            foreach ($gridData[$module->getMnemo()] as $entityId => $entityData) {
-                $this->entity()->find($entityId, $module)->exchangeArray($entityData);
+        $items = [];
+        $entities = $om->getRepository(Entity::class)->findBy(['mnemo' => array_keys($gridData)]);
+        foreach ($entities as $entity) {
+            foreach ($gridData[$entity->getMnemo()] as $itemId => $entityData) {
+                $items[] = $item = $this->entity()->find($itemId, $entity)->exchangeArray($entityData);
+                $this->getEventManager()->trigger('edit', $item, ['context' => $this]);
             }
         }
 
         $om->flush();
+        $this->getEventManager()->trigger('edit.post', $items, ['context' => $this]);
+
+
 
         /*if ($request->isXmlHttpRequest()) {
             // only ajax processing

@@ -120,7 +120,11 @@ class Formable extends AbstractPlugin {
 
 
 		if ($validationGroup) {
-			$this->prepareColumns($validationGroup, $form);
+            if ($grid instanceof \Agere\Invoice\Block\Grid\InvoiceProductGrid) { // @todo Видалити хардкод
+                $this->prepareColumnsInvoiceProductGrid($validationGroup, $form);
+            } else {
+                $this->prepareColumns($validationGroup, $form);
+            }
 		}
 
 		//\Zend\Debug\Debug::dump(get_class()); die(__METHOD__);
@@ -130,13 +134,12 @@ class Formable extends AbstractPlugin {
 		if (is_array($name)) {
 			$i = 0;
 			foreach ($name as $key => $value) {
-
 				if (is_array($value)) {
 					if ($form instanceof \Zend\Form\Element\Collection) {
 						//$this->qualifiedNames[] = "[]";
 						$form = $form->getTargetElement();
 
-						$this->qualifiedNames[] = "[' + iterator.count + ']";
+						//$this->qualifiedNames[] = "[' + iterator.count + ']";
 						//$this->qualifiedNames[] = "[]";
 						//$uniqueId = $form->getName() . '_id';
 						//$this->qualifiedNames[] = "[' + rowObject.{$uniqueId} + ']";
@@ -144,12 +147,12 @@ class Formable extends AbstractPlugin {
 						//\Zend\Debug\Debug::dump($uniqueId); die(__METHOD__);
 					}
 
-					$this->qualifiedNames[] = count($this->qualifiedNames) ? '[' . $key . ']' : $key;
+					//$this->qualifiedNames[] = count($this->qualifiedNames) ? '[' . $key . ']' : $key;
 
 					//\Zend\Debug\Debug::dump(get_class($form));
 					$this->prepareColumns($value, $form->get($key));
 
-					array_pop($this->qualifiedNames);
+					//array_pop($this->qualifiedNames);
 
 				} else {
 					//\Zend\Debug\Debug::dump([$value, __METHOD__]);
@@ -212,9 +215,124 @@ class Formable extends AbstractPlugin {
 		}
 
 		if (!$column) {
-			//\Zend\Debug\Debug::dump([$uniqueId, get_class($column)]); die(__METHOD__);
-			throw new Exception\RuntimeException(sprintf('Unresolved column Unique Id %s. '
-				. 'Maybe you need add key=>value pare to related property', $uniqueId));
+			# throw new Exception\RuntimeException(sprintf('Unresolved column Unique Id %s. '
+			#	. 'Maybe you need add key=>value pare to related property', $uniqueId));
+            return false;
+		}
+
+        // $this->prepareColumnsInvoiceProductGrid($validationGroup, $form);
+        // 'renderer_parameter' => ['editable', true, 'jqGrid'],
+        //$rendererParameter = $column->getRendererParameters();
+        $editable = true;
+        if ($element->getAttribute('disabled') || $element->getAttribute('readonly')) {
+            $editable = false;
+        }
+        $column->setRendererParameter('editable', $editable, 'jqGrid');
+
+        //$column->setRendererParameter('formatter', $formatterJs, $grid->getRendererName());
+
+		//\Zend\Debug\Debug::dump($html); die(__METHOD__);
+
+		array_pop($this->qualifiedNames);
+	}
+
+
+
+
+
+
+
+
+
+
+	protected function prepareColumnsInvoiceProductGrid($name, $form) {
+		if (is_array($name)) {
+			$i = 0;
+			foreach ($name as $key => $value) {
+				if (is_array($value)) {
+					if ($form instanceof \Zend\Form\Element\Collection) {
+						//$this->qualifiedNames[] = "[]";
+						$form = $form->getTargetElement();
+
+						$this->qualifiedNames[] = "[' + iterator.count + ']";
+						//$this->qualifiedNames[] = "[]";
+						//$uniqueId = $form->getName() . '_id';
+						//$this->qualifiedNames[] = "[' + rowObject.{$uniqueId} + ']";
+						//$this->qualifiedNames[] = '[' . $i . ']';
+						//\Zend\Debug\Debug::dump($uniqueId); die(__METHOD__);
+					}
+
+					$this->qualifiedNames[] = count($this->qualifiedNames) ? '[' . $key . ']' : $key;
+
+					//\Zend\Debug\Debug::dump(get_class($form));
+					$this->prepareColumnsInvoiceProductGrid($value, $form->get($key));
+
+					array_pop($this->qualifiedNames);
+
+				} else {
+					//\Zend\Debug\Debug::dump([$value, __METHOD__]);
+					$this->prepareColumnInvoiceProductGrid($value, $form);
+				}
+				$i++;
+			}
+		} else {
+			$this->prepareColumnInvoiceProductGrid($name, $form);
+		}
+	}
+
+	protected function prepareColumnInvoiceProductGrid($name, $form) {
+		//$formName = $form->getName();
+		if ($form instanceof \Zend\Form\Element\Collection) {
+			$form = $form->getTargetElement();
+		}
+
+		$element = $form->get($name);
+
+		$formElement = $this->getFormElementHelper();
+
+		$grid = $this->grid->getDataGrid();
+
+		$columnName = $form->getName();
+		//$columnName = substr($formName, 0, (strlen($formName) - 1));
+		//$columnName = substr($formName, 0, (strlen($form->getName())));
+
+		//\Zend\Debug\Debug::dump($columnName); die(__METHOD__);
+
+
+		//\Zend\Debug\Debug::dump($form->getName()); die(__METHOD__);
+
+		//\Zend\Debug\Debug::dump($name);
+		//\Zend\Debug\Debug::dump(($element->getName()));
+		//\Zend\Debug\Debug::dump(get_class($element)); die(__METHOD__);
+
+
+		$uniqueId = $columnName . '_' . $element->getName();
+		$relatedUniqueId = isset($this->related[$uniqueId]) ? $this->related[$uniqueId] : false;
+
+		//\Zend\Debug\Debug::dump($uniqueId);
+
+		$column = ($column = $grid->getColumnByUniqueId($uniqueId))
+			? $column
+			: $grid->getColumnByUniqueId($relatedUniqueId);
+
+		if (!$column) {
+			// try get dynamic columns
+			$item = $this->getStatusChanger()->setItem($this->form->getObject())->getItemWithStatus();
+			//\Zend\Debug\Debug::dump(get_class($item));die(__METHOD__);
+
+			//if (method_exists($item, 'getStatus')) {
+				$statusMnemo = $item->getStatus()->getMnemo();
+				//$uniqueId = $element->getName() . '_' . $statusMnemo;
+
+				$column = $grid->getColumnByUniqueId($columnName . '_' . $statusMnemo);
+				//\Zend\Debug\Debug::dump(get_class($column)); //die(__METHOD__);
+			//}
+		}
+
+		if (!$column) {
+			# throw new Exception\RuntimeException(sprintf('Unresolved column Unique Id %s. '
+			#	. 'Maybe you need add key=>value pare to related property', $uniqueId));
+            return false;
 		}
 
 		#$rowId = $columnName . '_id';
