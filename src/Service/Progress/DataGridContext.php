@@ -9,14 +9,65 @@
  */
 namespace Agere\ZfcDataGrid\Service\Progress;
 
+use Zend\Mvc\I18n\Translator;
+use Zend\I18n\Translator\TranslatorAwareInterface;
+use Zend\I18n\Translator\TranslatorAwareTrait;
 use DoctrineModule\Persistence\ObjectManagerAwareInterface;
 use DoctrineModule\Persistence\ProvidesObjectManager;
+use Magere\Entity\Controller\Plugin\ModulePlugin;
+use Magere\Entity\Controller\Plugin\EntityPlugin;
+use Magere\Fields\Service\FieldsService;
+use Agere\Simpler\Plugin\SimplerPlugin;
 
-class DataGridContext implements ObjectManagerAwareInterface
+/**
+ * @method Translator getTranslator()
+ */
+class DataGridContext implements ObjectManagerAwareInterface, TranslatorAwareInterface
 {
+    use TranslatorAwareTrait;
+
     use ProvidesObjectManager;
 
     protected $event;
+
+    /** @var ModulePlugin */
+    protected $modulePlugin;
+
+    /** @var SimplerPlugin */
+    protected $simplerPlugin;
+
+    /** @var FieldsService */
+    protected $fieldsService;
+
+    public function __construct(ModulePlugin $modulePlugin, SimplerPlugin $simplerPlugin, FieldsService $fieldsService)
+    {
+        $this->modulePlugin = $modulePlugin;
+        $this->simplerPlugin = $simplerPlugin;
+        $this->fieldsService = $fieldsService;
+    }
+
+    public function getModulePlugin()
+    {
+        return $this->modulePlugin;
+    }
+
+    /**
+     * @return EntityPlugin
+     */
+    public function getEntityPlugin()
+    {
+        return $this->modulePlugin->getEntityPlugin();
+    }
+
+    public function getSimplerPlugin()
+    {
+        return $this->simplerPlugin;
+    }
+
+    public function getFieldsService()
+    {
+        return $this->fieldsService;
+    }
 
     public function setEvent($event)
     {
@@ -41,10 +92,10 @@ class DataGridContext implements ObjectManagerAwareInterface
 
         $uow = $om->getUnitOfWork();
         $uow->computeChangeSets(); // do not compute changes if inside a listener
-        $changeset = $uow->getEntityChangeSet($this->getItem());
+        $changeSet = $uow->getEntityChangeSet($item = $this->getItem());
 
         $changedField = [];
-        foreach ($changeset as $field => $set) {
+        foreach ($changeSet as $field => $set) {
             if (is_int($set[0])) {
                 $set[1] = (int) $set[1];
             } elseif (is_float($set[0])) {
@@ -60,9 +111,36 @@ class DataGridContext implements ObjectManagerAwareInterface
 
         $message = '';
         if (isset($changedField[0])) {
-            $message = sprintf('Сущность отредактирована. Изменены поля: ' . implode(', ', $changedField));
+            $translator = $this->getTranslator();
+            $module = $this->getModulePlugin()->setRealContext($item)->getRealModule();
+            $entity = $this->getEntityPlugin()->setContext($item)->getEntity();
+            $fields = $this->getSimplerPlugin()
+                ->setContext($this->getFieldsService()->getAllByEntity($entity))
+                ->asAssociate('mnemo');
+
+            $message = [];
+            $message[] = $translator->translate(
+                ucfirst($entity->getMnemo()) . ' edited',
+                $module->getName(),
+                $translator->getFallbackLocale()
+            );
+            $message[] = $translator->translate(
+                'Changed fields',
+                $this->getTranslatorTextDomain(),
+                $translator->getFallbackLocale()
+            ) . ':';
+
+            foreach ($changeSet as $field => $set) {
+                $fieldName = isset($fields[$field]) ? $fields[$field]->getName() : ucfirst($field);
+                $template = $translator->translate(
+                    '%s from %s to %s',
+                    $this->getTranslatorTextDomain(),
+                    $translator->getFallbackLocale()
+                );
+                $message[] = sprintf($template, $fieldName, $set[0], $set[1]);
+            }
         }
 
-        return $message;
+        return implode("\n", $message);
     }
 }

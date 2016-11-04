@@ -1,0 +1,60 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Agere Cart Module\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-11-04 12:19+0200\n"
+"PO-Revision-Date: 2016-11-04 12:22+0200\n"
+"Last-Translator: \n"
+"Language-Team: Agere Company <dev@agere.com.ua>\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: translate;_;translatePlural:1,2\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.8.8\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../src/Service/Progress/DataGridContext.php:108
+msgid " edited"
+msgstr "відредаговано"
+
+#: ../src/Service/Progress/DataGridContext.php:109
+msgid "Changed fields"
+msgstr "Змінено поля"
+
+#: ../src/Service/Progress/DataGridContext.php:113
+#, php-format
+msgid "%s from %s to %s"
+msgstr "%s з %s на %s"
+
+#: ../view/agere/grid/footer.phtml:27
+msgid "Showing"
+msgstr ""
+
+#: ../view/agere/grid/footer.phtml:27 ../view/agere/grid/footer.phtml:28
+msgid "of"
+msgstr ""
+
+#: ../view/agere/grid/footer.phtml:27
+msgid "items"
+msgstr ""
+
+#: ../view/agere/grid/footer.phtml:28
+msgid "Page"
+msgstr ""
+
+#~ msgid "Required %s item is not available for order. "
+#~ msgid_plural "Required %s items is not available for order. "
+#~ msgstr[0] "Бажана кількість в розмірі %s штука не доступна для замовлення. "
+#~ msgstr[1] "Бажана кількість в розмірі %s штуки не доступні для замовлення. "
+#~ msgstr[2] "Бажана кількість в розмірі %s штук не доступні для замовлення. "
+
+#~ msgid "Left only %s item"
+#~ msgid_plural "Left only %s items"
+#~ msgstr[0] "Залишилась всього %s позиція"
+#~ msgstr[1] "Залишилось всього %s позиції"
+#~ msgstr[2] "Залишилось всього %s позицій"

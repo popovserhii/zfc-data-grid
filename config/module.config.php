@@ -49,16 +49,20 @@ return [
 
 	'service_manager' => [
 		//'aliases' => [],
-		'invokables' => [
-            Service\Progress\DataGridContext::class => Service\Progress\DataGridContext::class,
+		//'invokables' => [],
+		'factories' => [
+            Service\Progress\DataGridContext::class => Service\Progress\Factory\DataGridContextFactory::class,
         ],
-		//'factories' => [],
 
         'abstract_factories' => [
             Block\Factory\GridFactory::class,
         ],
+        'delegators' => [
+            Service\Progress\DataGridContext::class => [
+                \Agere\Translator\Service\Factory\TranslatorDelegatorFactory::class
+            ]
+        ],
 	],
-
 
     'translator' => [
         'translation_file_patterns' => [
