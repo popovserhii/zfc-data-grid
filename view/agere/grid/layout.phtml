@@ -382,7 +382,19 @@ $(document).ready(function () {
         view: <?= isset($this->navGridView) ? (int) $this->navGridView : 0 ?>,
         search: <?= isset($this->navGridSearch) ? (int) $this->navGridSearch : 0 ?>,
     };
-    grid_<?php echo $this->gridId; ?>.navGrid('#<?= $this->gridId ?>_pager', navGridParameters);
+    grid_<?php echo $this->gridId; ?>.jqGrid('navGrid', '#<?= $this->gridId ?>_pager', navGridParameters,
+        {},
+        {},
+        {
+            afterShowForm: function(form) {
+                // dialog window positioning
+                form.closest('div.ui-jqdialog').position({
+                    at: 'left+7% bottom-20%',
+                    of: grid_<?php echo $this->gridId; ?>.closest('div.ui-jqgrid')
+                });
+            }
+        }
+    );
     $.data(document.body, 'jqGrid.<?php echo $this->gridId; ?>.navGrid.parameters', navGridParameters);
 
     var inlineNavParameters = {
