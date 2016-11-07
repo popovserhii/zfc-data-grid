@@ -6,7 +6,7 @@ vendor/
 config/autoload/*.local.php
 
 # Binary gettext files
-*.mo
+#*.mo
 
 # Data
 data/logs/
