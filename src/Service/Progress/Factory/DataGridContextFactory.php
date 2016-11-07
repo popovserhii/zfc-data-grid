@@ -3,7 +3,7 @@
  * Progress Service Factory
  *
  * @category Agere
- * @package Agere_Progress
+ * @package Agere_ZfcDataGrid
  * @author Popov Sergiy <popov@agere.com.ua>
  * @datetime: 03.11.16 19:01
  */
@@ -24,7 +24,6 @@ class DataGridContextFactory
         $cpm = $container->get('ControllerPluginManager');
         /** @var FieldsService $fieldsService */
         $fieldsService = $container->get('FieldsService');
-        //$user = $cpm->get('user');
         /** @var ModulePlugin $modulePlugin */
         $modulePlugin = $cpm->get('module');
         /** @var SimplerPlugin $simplerPlugin */

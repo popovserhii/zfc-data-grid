@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Agere Cart Module\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-04 12:19+0200\n"
-"PO-Revision-Date: 2016-11-04 12:22+0200\n"
+"POT-Creation-Date: 2016-11-07 16:25+0200\n"
+"PO-Revision-Date: 2016-11-07 16:25+0200\n"
 "Last-Translator: \n"
 "Language-Team: Agere Company <dev@agere.com.ua>\n"
 "Language: uk\n"
@@ -18,15 +18,15 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: ..\n"
 
-#: ../src/Service/Progress/DataGridContext.php:108
+#: ../src/Service/Progress/DataGridContext.php:109
 msgid " edited"
 msgstr "відредаговано"
 
-#: ../src/Service/Progress/DataGridContext.php:109
+#: ../src/Service/Progress/DataGridContext.php:114
 msgid "Changed fields"
 msgstr "Змінено поля"
 
-#: ../src/Service/Progress/DataGridContext.php:113
+#: ../src/Service/Progress/DataGridContext.php:122
 #, php-format
 msgid "%s from %s to %s"
 msgstr "%s з %s на %s"

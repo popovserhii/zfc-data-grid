@@ -69,8 +69,9 @@ class DataGridController extends AbstractActionController
                 continue;
             }
 
-            $gridMnemo = strtolower((new CamelCaseToDash())->filter($route->getParam('grid')));
-            list($moduleMnemo, $field) = explode('_', strtolower((new CamelCaseToDash())->filter($name)));
+            //$gridMnemo = strtolower((new CamelCaseToDash())->filter($route->getParam('grid')));
+            $gridMnemo = $route->getParam('grid');
+            list($moduleMnemo, $field) = explode('_', $name);
             if ($itemId = $request->getPost($moduleMnemo . '_id')) {
                 $gridData[$moduleMnemo][$itemId][$field] = $value;
             } elseif ($gridMnemo === $moduleMnemo) {

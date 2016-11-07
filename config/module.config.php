@@ -6,7 +6,6 @@ return [
 
     'progress' => [
         __NAMESPACE__ => [
-            //'pattern' => '',
             'context' => Service\Progress\DataGridContext::class,
         ]
     ],
@@ -53,14 +52,13 @@ return [
 		'factories' => [
             Service\Progress\DataGridContext::class => Service\Progress\Factory\DataGridContextFactory::class,
         ],
-
-        'abstract_factories' => [
-            Block\Factory\GridFactory::class,
-        ],
         'delegators' => [
             Service\Progress\DataGridContext::class => [
                 \Agere\Translator\Service\Factory\TranslatorDelegatorFactory::class
             ]
+        ],
+        'abstract_factories' => [
+            Block\Factory\GridFactory::class,
         ],
 	],
 

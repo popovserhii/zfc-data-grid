@@ -10,10 +10,10 @@
 namespace Agere\ZfcDataGrid\Service\Progress;
 
 use Zend\Mvc\I18n\Translator;
-use Zend\I18n\Translator\TranslatorAwareInterface;
 use Zend\I18n\Translator\TranslatorAwareTrait;
 use DoctrineModule\Persistence\ObjectManagerAwareInterface;
 use DoctrineModule\Persistence\ProvidesObjectManager;
+use Agere\Progress\Service\ContextInterface;
 use Magere\Entity\Controller\Plugin\ModulePlugin;
 use Magere\Entity\Controller\Plugin\EntityPlugin;
 use Magere\Fields\Service\FieldsService;
@@ -22,7 +22,7 @@ use Agere\Simpler\Plugin\SimplerPlugin;
 /**
  * @method Translator getTranslator()
  */
-class DataGridContext implements ObjectManagerAwareInterface, TranslatorAwareInterface
+class DataGridContext implements ContextInterface, ObjectManagerAwareInterface
 {
     use TranslatorAwareTrait;
 
@@ -79,6 +79,11 @@ class DataGridContext implements ObjectManagerAwareInterface, TranslatorAwareInt
         return $this->event->getTarget();
     }
 
+    public function getEvent()
+    {
+        return $this->event;
+    }
+
     public function getExtra()
     {
         return [];
@@ -92,7 +97,7 @@ class DataGridContext implements ObjectManagerAwareInterface, TranslatorAwareInt
         $changeSet = $uow->getEntityChangeSet($item = $this->getItem());
 
         $message = [];
-        if (isset($changedField[0])) {
+        if ($changeSet) {
             $translator = $this->getTranslator();
             $module = $this->getModulePlugin()->setRealContext($item)->getRealModule();
             $entity = $this->getEntityPlugin()->setContext($item)->getEntity();
