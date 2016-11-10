@@ -69,9 +69,11 @@ class DataGridController extends AbstractActionController
                 continue;
             }
 
-            //$gridMnemo = strtolower((new CamelCaseToDash())->filter($route->getParam('grid')));
-            $gridMnemo = $route->getParam('grid');
+            $filter = new CamelCaseToDash();
+            //$gridMnemo = $route->getParam('grid');
             list($moduleMnemo, $field) = explode('_', $name);
+            $moduleMnemo = strtolower($filter->filter($moduleMnemo));
+            $gridMnemo = strtolower($filter->filter($route->getParam('grid')));
             if ($itemId = $request->getPost($moduleMnemo . '_id')) {
                 $gridData[$moduleMnemo][$itemId][$field] = $value;
             } elseif ($gridMnemo === $moduleMnemo) {
@@ -84,8 +86,11 @@ class DataGridController extends AbstractActionController
         $entities = $om->getRepository(Entity::class)->findBy(['mnemo' => array_keys($gridData)]);
         foreach ($entities as $entity) {
             foreach ($gridData[$entity->getMnemo()] as $itemId => $entityData) {
-                $items[] = $item = $this->entity()->find($itemId, $entity)->exchangeArray($entityData);
-                $this->getEventManager()->trigger('edit', $item, ['context' => $this]);
+                $item = $this->entity()->find($itemId, $entity);
+                $params = ['context' => $this, 'gridData' => $gridData];
+                $this->getEventManager()->trigger('edit.on', $item, $params);
+                $items[] = $item->exchangeArray($entityData);
+                $this->getEventManager()->trigger('edit', $item, $params);
             }
         }
 
