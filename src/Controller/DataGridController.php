@@ -122,7 +122,10 @@ class DataGridController extends AbstractActionController
         $items = $domainService->getRepository()->findBy(['id' => explode(',', $request->getPost('id'))]);
 
         foreach ($items as $item) {
+            $params = ['context' => $this];
+            $this->getEventManager()->trigger('delete.on', $item, $params);
             $om->remove($item);
+            $this->getEventManager()->trigger('delete', $item, $params);
         }
         $om->flush();
 
