@@ -9,6 +9,7 @@
  */
 namespace Agere\ZfcDataGrid\Controller;
 
+use Magere\Entity\Controller\Plugin\EntityPlugin;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Filter\Word\CamelCaseToDash;
 use Zend\Stdlib\Exception;
@@ -28,14 +29,23 @@ class DataGridController extends AbstractActionController
      */
     protected $domainService;
 
-    public function __construct(/*DomainServiceInterface*/ $entityService)
+    /** @var EntityPlugin */
+    protected $entityPlugin;
+
+    public function __construct(/*DomainServiceInterface*/ $entityService, EntityPlugin $entityPlugin)
     {
         $this->domainService = $entityService;
+        $this->entityPlugin = $entityPlugin;
     }
 
     public function getDomainService()
     {
         return $this->domainService;
+    }
+
+    public function getEntityPlugin()
+    {
+        return $this->entityPlugin;
     }
 
     public function modifyAction()
@@ -59,6 +69,7 @@ class DataGridController extends AbstractActionController
         $request = $this->getRequest();
         $route = $this->getEvent()->getRouteMatch();
         $domainService = $this->getDomainService();
+        $entityPlugin = $this->getEntityPlugin();
 
         $om = $domainService->getObjectManager();
         //$items = $domainService->getRepository()->findBy(['id' => explode(',', $request->getPost('id'))]);
@@ -72,13 +83,15 @@ class DataGridController extends AbstractActionController
             $filter = new CamelCaseToDash();
             //$gridMnemo = $route->getParam('grid');
             list($moduleMnemo, $field) = explode('_', $name);
-            $moduleMnemo = strtolower($filter->filter($moduleMnemo));
-            $gridMnemo = strtolower($filter->filter($route->getParam('grid')));
+            $moduleMnemoAlias = strtolower($filter->filter($moduleMnemo));
+            //$moduleMnemoAlias = $entityPlugin->toAlias($moduleMnemo);
+            //$gridMnemo = strtolower($filter->filter($route->getParam('grid')));
+            $gridMnemo = $route->getParam('grid');
             if ($itemId = $request->getPost($moduleMnemo . '_id')) {
-                $gridData[$moduleMnemo][$itemId][$field] = $value;
+                $gridData[$moduleMnemoAlias][$itemId][$field] = $value;
             } elseif ($gridMnemo === $moduleMnemo) {
                 $itemId = $request->getPost('id');
-                $gridData[$moduleMnemo][$itemId][$field] = $value;
+                $gridData[$moduleMnemoAlias][$itemId][$field] = $value;
             }
         }
 

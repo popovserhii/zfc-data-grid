@@ -23,7 +23,7 @@ class DataGridControllerFactory
         //$urlPlugin = $cpm->get('url');
         /** @var Current $currentPlugin */
         //$currentPlugin = $cpm->get('current');
-        //$modulePlugin = $cpm->get('module');
+        $entityPlugin = $cpm->get('entity');
         /** @var \Zend\Mvc\Router\RouteMatch $route */
         // Important get route from current plugin for correct work of forward
         //$route = $currentPlugin->currentRoute();
@@ -45,7 +45,7 @@ class DataGridControllerFactory
 
         $domainService = $sm->get(ucfirst($gridId) . 'Service');
 
-        $controller = new DataGridController($domainService);
+        $controller = new DataGridController($domainService, $entityPlugin);
         //$controller->setServiceManager($sm);
 
         return $controller;
