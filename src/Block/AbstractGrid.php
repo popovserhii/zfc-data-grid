@@ -110,7 +110,7 @@ abstract class AbstractGrid implements InitializableInterface
                         'action' => 'create',
                     ]
                 ],
-                'class' => 'btn btn-success btn-md',
+                'class' => 'btn btn-success btn-sm',
             ]);
 
             // add button "Back" if relative label set
@@ -123,7 +123,7 @@ abstract class AbstractGrid implements InitializableInterface
                         'action' => 'back',
                     ]
                 ],
-                'class' => 'btn btn-default btn-md',
+                'class' => 'btn btn-default btn-sm',
             ]);
             $this->initToolbar();
             //$actionBlock = $toolbar->createActionPanel();

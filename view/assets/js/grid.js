@@ -5,16 +5,17 @@ AgereGrid = {
 	attachEvents: function () {
 		this.attachOnSelectRow();
 		this.attachOnTabActivate();
-		//jqGrid.onSelectRow
+		this.attachDataInitTrigger();
+		this.attachActivateDatePicker();
 	},
 
 	// Show Print dialog
 	attachOnSelectRow: function () {
 		// Remove handler from existing elements
-		this.body.off('jqGrid.onSelectRow', '.ui-jqgrid', this.editRow);
+		this.body.off('jqGrid.onSelectRow', '.ui-jqgrid', this.selectRow);
 
 		// Re-add event handler for all matching elements
-		this.body.on('jqGrid.onSelectRow', '.ui-jqgrid', this.editRow);
+		this.body.on('jqGrid.onSelectRow', '.ui-jqgrid', this.selectRow);
 	},
 
 	attachOnTabActivate: function () {
@@ -25,9 +26,20 @@ AgereGrid = {
 		this.body.on('shown.bs.tab', 'a[data-toggle="tab"]', this.activateOnce);
 	},
 
-	//var lastSelection;
+	attachDataInitTrigger: function () {
+		//$('#cartItem_grid').bind('jqGridAfterGridComplete', this.actualiseTotalPrice);
+		this.body.bind('jqGrid.loadComplete', this.dataInitTrigger);
+	},
 
-	editRow: function (e, id, boolean, orgClickEvent) {
+	attachActivateDatePicker: function () {
+		// Remove handler from existing elements
+		this.body.off('jqGrid.dataInit', this.activateDatePicker);
+
+		// Re-add event handler for all matching elements
+		this.body.on('jqGrid.dataInit', this.activateDatePicker);
+	},
+
+	selectRow: function (e, id, boolean, orgClickEvent) {
 		var self = AgereGrid;
 		var lastSelection = self.body.data('jqGrid.lastSelection');
 
@@ -80,7 +92,7 @@ AgereGrid = {
 	 */
 	reload: function (id, result) {
 		//console.log('reload is activate');
-		$(this).trigger("reloadGrid");
+		$(this).trigger('reloadGrid');
 	},
 
 	/**
@@ -121,6 +133,32 @@ AgereGrid = {
 		}
 
 		return self.onlyOnce['activateOnce'][hash] == undefined;
+	},
+
+	dataInitTrigger: function() {
+		var grid = $(arguments[0].target);
+		var colModels = grid.jqGrid('getGridParam', 'colModel');
+
+		$.each(colModels, function(i, model) {
+			if (!model.editable) {
+				return;
+			}
+			grid.setColProp(model.name, {
+				editoptions: {
+					dataInit: function (elem) {
+						//$(elem).attr('size', 2);  // set the width which you need
+						$(elem).trigger('jqGrid.dataInit', [model, elem]);
+						$(elem).trigger('jqGrid.' + model.name + '.dataInit', [model, elem]);
+					}
+				}
+			});
+		});
+	},
+
+	activateDatePicker: function(e, model, elm) {
+		if (model.formatter && model.formatter == 'date') {
+			$(elm).addClass('datepicker');
+		}
 	}
 
 };

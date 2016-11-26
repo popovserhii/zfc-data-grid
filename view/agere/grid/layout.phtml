@@ -371,6 +371,12 @@ $(document).ready(function () {
             }
 
             return attrs;
+        },
+
+        serializeRowData: function(postdata) {
+            $(this).trigger('jqGrid.serializeRowData', [postdata]);
+
+            return postdata;
         }
     });
 
@@ -420,7 +426,7 @@ $(document).ready(function () {
              }*/
         },
         addParams: {
-            keys: true
+            keys: true,
         }
     };
     grid_<?php echo $this->gridId; ?>.inlineNav('#<?= $this->gridId ?>_pager', inlineNavParameters);

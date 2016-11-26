@@ -21,9 +21,11 @@ return [
 
     'controller_plugins' => [
         'aliases' => [
+            'grid' => Controller\Plugin\GridPlugin::class,
             'formable' => Controller\Plugin\Formable::class,
         ],
         'factories' => [
+            Controller\Plugin\GridPlugin::class => Controller\Plugin\Factory\GridPluginFactory::class,
             Controller\Plugin\Formable::class => Controller\Plugin\Factory\FormableFactory::class,
         ],
     ],

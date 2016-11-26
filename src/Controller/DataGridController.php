@@ -9,6 +9,7 @@
  */
 namespace Agere\ZfcDataGrid\Controller;
 
+use Agere\ZfcDataGrid\Controller\Plugin\GridPlugin;
 use Magere\Entity\Controller\Plugin\EntityPlugin;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Filter\Word\CamelCaseToDash;
@@ -19,6 +20,7 @@ use Agere\Core\Service\DomainServiceInterface;
 use Magere\Entity\Model\Entity;
 
 /**
+ * @method GridPlugin grid()
  * @method \Magere\Entity\Controller\Plugin\EntityPlugin entity()
  * @method \Magere\Entity\Controller\Plugin\ModulePlugin module($context = null)
  */
@@ -64,12 +66,41 @@ class DataGridController extends AbstractActionController
         return $this->{$method}();
     }
 
+    public function addOperation()
+    {
+        $request = $this->getRequest();
+        $domainService = $this->getDomainService();
+        $om = $domainService->getObjectManager();
+        $operation = $request->getPost('oper');
+
+        $gridData = $this->grid()->prepareExchangeData($request);
+
+        $items = [];
+        $entities = $om->getRepository(Entity::class)->findBy(['mnemo' => array_keys($gridData)]);
+        foreach ($entities as $entity) {
+            foreach ($gridData[$entity->getMnemo()] as $itemId => $entityData) {
+                $item = $this->entity()->find($itemId, $entity, EntityPlugin::CREATE_EMPTY);
+                $params = ['context' => $this, 'gridData' => $gridData];
+                $this->getEventManager()->trigger($operation . '.on', $item, $params);
+                $items[] = $item->exchangeArray($entityData);
+                $this->getEventManager()->trigger($operation, $item, $params);
+            }
+        }
+
+        $om->flush();
+        $this->getEventManager()->trigger($operation . '.post', $items, ['context' => $this]);
+
+        return (new JsonModel([
+            'message' => 'Edited items successfully updated',
+        ]));
+    }
+
     public function editOperation()
     {
         $request = $this->getRequest();
         $route = $this->getEvent()->getRouteMatch();
         $domainService = $this->getDomainService();
-        $entityPlugin = $this->getEntityPlugin();
+        //$entityPlugin = $this->getEntityPlugin();
 
         $om = $domainService->getObjectManager();
         //$items = $domainService->getRepository()->findBy(['id' => explode(',', $request->getPost('id'))]);
