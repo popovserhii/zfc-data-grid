@@ -68,6 +68,11 @@ class DataGridController extends AbstractActionController
 
     public function addOperation()
     {
+        return $this->editOperation();
+    }
+
+    public function editOperation()
+    {
         $request = $this->getRequest();
         $domainService = $this->getDomainService();
         $om = $domainService->getObjectManager();
@@ -91,11 +96,11 @@ class DataGridController extends AbstractActionController
         $this->getEventManager()->trigger($operation . '.post', $items, ['context' => $this]);
 
         return (new JsonModel([
-            'message' => 'Edited items successfully updated',
+            'message' => sprintf('Items successfully have been %sed', $operation),
         ]));
     }
 
-    public function editOperation()
+    public function editOperationOld()
     {
         $request = $this->getRequest();
         $route = $this->getEvent()->getRouteMatch();
@@ -105,26 +110,7 @@ class DataGridController extends AbstractActionController
         $om = $domainService->getObjectManager();
         //$items = $domainService->getRepository()->findBy(['id' => explode(',', $request->getPost('id'))]);
 
-        $gridData = [];
-        foreach ($request->getPost() as $name => $value) {
-            if (in_array($name, ['id', 'oper']) || (substr($name, -3, 3) === '_id')) { // skip specialized keywords
-                continue;
-            }
-
-            $filter = new CamelCaseToDash();
-            //$gridMnemo = $route->getParam('grid');
-            list($moduleMnemo, $field) = explode('_', $name);
-            $moduleMnemoAlias = strtolower($filter->filter($moduleMnemo));
-            //$moduleMnemoAlias = $entityPlugin->toAlias($moduleMnemo);
-            //$gridMnemo = strtolower($filter->filter($route->getParam('grid')));
-            $gridMnemo = $route->getParam('grid');
-            if ($itemId = $request->getPost($moduleMnemo . '_id')) {
-                $gridData[$moduleMnemoAlias][$itemId][$field] = $value;
-            } elseif ($gridMnemo === $moduleMnemo) {
-                $itemId = $request->getPost('id');
-                $gridData[$moduleMnemoAlias][$itemId][$field] = $value;
-            }
-        }
+        $gridData = $this->grid()->prepareExchangeData($request);
 
         $items = [];
         $entities = $om->getRepository(Entity::class)->findBy(['mnemo' => array_keys($gridData)]);
@@ -141,15 +127,6 @@ class DataGridController extends AbstractActionController
         $om->flush();
         $this->getEventManager()->trigger('edit.post', $items, ['context' => $this]);
 
-
-
-        /*if ($request->isXmlHttpRequest()) {
-            // only ajax processing
-            //$this->getResponse()->setContent(Json::encode('Покупатель успешно сохранен'));
-            $this->getResponse()->setContent('Edited items successfully updated');
-
-            return $this->getResponse();
-        }*/
 
         return (new JsonModel([
             'message' => 'Edited items successfully updated',
