@@ -6,7 +6,10 @@ AgereGrid = {
 		this.attachOnSelectRow();
 		this.attachOnTabActivate();
 		this.attachDataInitTrigger();
-		this.attachActivateDatePicker();
+		this.attachChangeSearchInputId();
+		this.attachActivateModelOptions();
+		this.attachActivateRowDatePicker();
+		this.attachActivateSearchDatePicker();
 	},
 
 	// Show Print dialog
@@ -31,13 +34,47 @@ AgereGrid = {
 		this.body.bind('jqGrid.loadComplete', this.dataInitTrigger);
 	},
 
-	attachActivateDatePicker: function () {
+	attachChangeSearchInputId: function () {
+		//$('#cartItem_grid').bind('jqGridAfterGridComplete', this.actualiseTotalPrice);
+		this.body.bind('jqGrid.loadComplete', this.changeSearchInputId);
+	},
+
+	attachActivateModelOptions: function () {
+		if (this.onlyOnce['attachActivateModelOptions'] == undefined) {
+			var grids = $('[id$="_grid"]');
+			// Remove handler from existing elements
+			grids.off('jqGridGridComplete', this.activateModelOptions);
+
+			// Re-add event handler for all matching elements
+			grids.on('jqGridGridComplete', this.activateModelOptions);
+
+			this.onlyOnce['attachActivateModelOptions'] = true;
+		}
+	},
+
+	attachActivateRowDatePicker: function () {
 		// Remove handler from existing elements
-		this.body.off('jqGrid.dataInit', this.activateDatePicker);
+		this.body.off('jqGrid.dataInit', this.activateRowDatePicker);
 
 		// Re-add event handler for all matching elements
-		this.body.on('jqGrid.dataInit', this.activateDatePicker);
+		this.body.on('jqGrid.dataInit', this.activateRowDatePicker);
 	},
+
+	attachActivateSearchDatePicker: function () {
+		if (this.onlyOnce['attachActivateSearchDatePicker'] == undefined) {
+			var grids = $('[id$="_grid"]');
+			// Remove handler from existing elements
+			//grids.off('jqGrid.activateModelOptions', this.activateSearchDatePicker);
+
+			// Re-add event handler for all matching elements
+			grids.on('jqGrid.activateModelOptions', this.activateSearchDatePicker);
+			//grids.on('beforeProcessing', this.activateSearchDatePicker);
+
+			this.onlyOnce['attachActivateSearchDatePicker'] = true;
+		}
+	},
+
+
 
 	selectRow: function (e, id, boolean, orgClickEvent) {
 		var self = AgereGrid;
@@ -145,19 +182,86 @@ AgereGrid = {
 			}
 			grid.setColProp(model.name, {
 				editoptions: {
-					dataInit: function (elem) {
+					dataInit: function (elm) {
 						//$(elem).attr('size', 2);  // set the width which you need
-						$(elem).trigger('jqGrid.dataInit', [model, elem]);
-						$(elem).trigger('jqGrid.' + model.name + '.dataInit', [model, elem]);
+						$(elm).trigger('jqGrid.dataInit', [model, elm]);
+						$(elm).trigger('jqGrid.' + model.name + '.dataInit', [model, elm]);
 					}
 				}
 			});
 		});
 	},
 
-	activateDatePicker: function(e, model, elm) {
+	changeSearchInputId: function() {
+		var grid = $(arguments[0].target);
+	},
+
+	activateModelOptions: function() {
+		var self = AgereGrid;
+		var grid = $(arguments[0].target);
+		var hash = 'activateModelOptions-' + grid.attr('id');
+
+		//console.log(arguments);
+
+		if (self.onlyOnce[hash] == undefined) {
+			var colModels = grid.jqGrid('getGridParam', 'colModel');
+
+			$.each(colModels, function (i, model) {
+				//console.log(model);
+				grid.trigger('jqGrid.activateModelOptions', [model]);
+			});
+
+			self.onlyOnce[hash] = true;
+		}
+	},
+
+	activateRowDatePicker: function(e, model, element) {
 		if (model.formatter && model.formatter == 'date') {
-			$(elm).addClass('datepicker');
+			var elm = $(element);
+			if (!elm.hasClass('datepicker')) {
+				elm.addClass('datepicker');
+			}
+		}
+	},
+
+	activateSearchDatePicker: function(e, model) {
+		//console.log(model);
+		//console.log('-----------------------');
+		//console.log(elm);
+		if (model.formatter && model.formatter == 'date') {
+			var grid = $(arguments[0].target);
+
+			//console.log(grid, model);
+			//console.log('[name=' + model.name + ']');
+			//console.log(grid.closest('.ui-jqgrid-view'));
+
+			var input = grid.closest('.ui-jqgrid-view').find('[name="' + model.name + '"]');
+			//console.log(input);
+			input/*.attr('id', grid.attr('id') + '_search_' + model.name)*/.addClass('datepicker').change(function() {
+				grid[0].triggerToolbar();
+			});
+			//$('#list').jqGrid('filterToolbar', { searchOnEnter: true, enableClear: false });
+
+			/*grid.setColProp(model.name, {
+				searchoptions: {
+					//sopt: xxxx,
+					//autosearch: true,
+					//searchOnEnter: false,
+					dataInit: function (elm) {
+						console.log(elm);
+						$(elm).addClass('datepicker');
+					},
+					dataEvents: [
+						{
+							type: 'change',
+							fn: function(e) {
+								console.log('change-fn');
+								grid[0].triggerToolbar();
+							}
+						}
+					]
+				}
+			});*/
 		}
 	}
 
@@ -166,8 +270,7 @@ AgereGrid = {
 jQuery(document).ready(function ($) {
 	AgereGrid.attachEvents();
 
-	// @todo Повішати на подію яка виникає після оновлення контенту через ajax - "refresh-content" element
-	$('.ui-jqgrid-btable').bind('jqGrid.loadComplete', function() {
-		AgereGrid.attachEvents(); // reattach print barcode button
-	});
+	//$('[id$="_grid"]').bind('jqGrid.loadComplete', function() {
+	//	AgereGrid.attachEvents(); // reattach print barcode button
+	//});
 });
