@@ -76,7 +76,8 @@ class Columns extends ZfcDatagridColumns {
 			/*
 			 * Filtering
 			 */
-			$searchoptions                = [];
+			//$searchoptions                = [];
+			$searchoptions = isset($rendererParameters['searchoptions']) ? $rendererParameters['searchoptions'] : [];
 			$searchoptions['clearSearch'] = false;
 			if ($column->hasFilterSelectOptions() === true) {
 				$options['stype']       = 'select';

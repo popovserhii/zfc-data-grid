@@ -203,7 +203,7 @@ $(document).ready(function () {
 
 
     var grid_<?php echo $this->gridId; ?> = $('#<?php echo $this->gridId; ?>_grid').jqGrid({
-
+        idPrefix: '<?php echo $this->gridId; ?>',
         url: '<?php echo $url; ?>',
 
         <?php if (isset($this->editUrl)) : ?>
