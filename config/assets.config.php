@@ -39,7 +39,7 @@ return [
                     'grid_js' => [
                         'assets' => [
                             'js/grid.js',
-                            'js/grid-remove.js',
+                            //'js/grid-remove.js',
                             'js/modal.js',
                         ],
                     ],

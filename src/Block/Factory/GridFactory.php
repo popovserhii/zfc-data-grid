@@ -33,7 +33,7 @@ class GridFactory implements AbstractFactoryInterface {
 		$className = $this->getClassName($sm, $name, $requestedName);
 
 		$translator = $sm->get('translator');
-		//$config = $sm->get('Config');
+		$config = $sm->get('Config');
 		$om = $sm->get('Doctrine\ORM\EntityManager');
 		$gpm = $sm->get('ControllerPluginManager');
 		$vhm = $sm->get('ViewHelperManager');
@@ -113,7 +113,7 @@ class GridFactory implements AbstractFactoryInterface {
 		//$gridBlock->setToolbar($bpm->get('block/admin/toolbar'));
         $gridBlock->setToolbar($bpm->get('AdminToolbar'));
 
-        $gridBlock->setColumnFactory(new ColumnFactory($gpm));
+        $gridBlock->setColumnFactory(new ColumnFactory($gpm, $config));
 		if ($gridBlock instanceof ObjectManagerAwareInterface) {
 			$gridBlock->setObjectManager($om);
 		}

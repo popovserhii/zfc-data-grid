@@ -100,39 +100,6 @@ class DataGridController extends AbstractActionController
         ]));
     }
 
-    public function editOperationOld()
-    {
-        $request = $this->getRequest();
-        $route = $this->getEvent()->getRouteMatch();
-        $domainService = $this->getDomainService();
-        //$entityPlugin = $this->getEntityPlugin();
-
-        $om = $domainService->getObjectManager();
-        //$items = $domainService->getRepository()->findBy(['id' => explode(',', $request->getPost('id'))]);
-
-        $gridData = $this->grid()->prepareExchangeData($request);
-
-        $items = [];
-        $entities = $om->getRepository(Entity::class)->findBy(['mnemo' => array_keys($gridData)]);
-        foreach ($entities as $entity) {
-            foreach ($gridData[$entity->getMnemo()] as $itemId => $entityData) {
-                $item = $this->entity()->find($itemId, $entity);
-                $params = ['context' => $this, 'gridData' => $gridData];
-                $this->getEventManager()->trigger('edit.on', $item, $params);
-                $items[] = $item->exchangeArray($entityData);
-                $this->getEventManager()->trigger('edit', $item, $params);
-            }
-        }
-
-        $om->flush();
-        $this->getEventManager()->trigger('edit.post', $items, ['context' => $this]);
-
-
-        return (new JsonModel([
-            'message' => 'Edited items successfully updated',
-        ]));
-    }
-
     public function delOperation()
     {
         $request = $this->getRequest();
