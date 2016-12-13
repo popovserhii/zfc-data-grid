@@ -43,6 +43,7 @@ class GridFactory implements AbstractFactoryInterface {
 		$urlPlugin = $gpm->get('url');
 		/** @var Current $currentPlugin */
 		$currentPlugin = $gpm->get('current');
+        $simplerPlugin = $gpm->get('simpler');
 		/** @var \Zend\Mvc\Router\RouteMatch $route */
         // Important get route from current plugin for correct work of forward
 		//$route = $currentPlugin->currentRoute();
@@ -113,7 +114,7 @@ class GridFactory implements AbstractFactoryInterface {
 		//$gridBlock->setToolbar($bpm->get('block/admin/toolbar'));
         $gridBlock->setToolbar($bpm->get('AdminToolbar'));
 
-        $gridBlock->setColumnFactory(new ColumnFactory($gpm, $config));
+        $gridBlock->setColumnFactory(new ColumnFactory($gpm, $simplerPlugin, $config));
 		if ($gridBlock instanceof ObjectManagerAwareInterface) {
 			$gridBlock->setObjectManager($om);
 		}
