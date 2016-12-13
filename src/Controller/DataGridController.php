@@ -85,7 +85,7 @@ class DataGridController extends AbstractActionController
         foreach ($entities as $entity) {
             foreach ($gridData[$entity->getMnemo()] as $itemId => $entityData) {
                 $item = $this->entity()->find($itemId, $entity, EntityPlugin::CREATE_EMPTY);
-                $params = ['context' => $this, 'gridData' => $gridData];
+                $params = ['context' => $this, 'gridData' => $gridData, 'entity' => $entity];
                 $this->getEventManager()->trigger($operation . '.on', $item, $params);
                 $items[] = $item->exchangeArray($entityData);
                 $this->getEventManager()->trigger($operation, $item, $params);

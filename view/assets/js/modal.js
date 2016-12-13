@@ -6,9 +6,14 @@ $(document).on('click', '.modal .ui-jqgrid-btable tr', function (e) {
 	var grid = elm.closest('table');
 	var modal = grid.closest('.modal');
 
-	if (elm.is('a')) {
-		grid.jqGrid('setSelection', elm.closest('tr').attr('id'));
+	// Only td tag interact with modal this has been agreed with Irena.
+	// All other perform native function
+	if (!elm.is('td')) {
+		return;
 	}
+	//if (elm.is('a')) {
+	//	grid.jqGrid('setSelection', elm.closest('tr').attr('id'));
+	//}
 
 	//var dataType = grid.jqGrid('getGridParam', 'datatype');
 	var rowId = grid.jqGrid('getGridParam', 'selrow');

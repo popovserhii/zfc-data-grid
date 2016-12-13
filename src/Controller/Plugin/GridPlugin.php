@@ -16,6 +16,7 @@ use Zend\Filter\Word\CamelCaseToDash;
 use Zend\Stdlib\Exception;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\Mvc\Controller\Plugin\Url;
+use Zend\Http\PhpEnvironment\Request;
 use Zend\Form\Form;
 use Zend\Form\Fieldset;
 
@@ -114,6 +115,10 @@ class GridPlugin extends AbstractPlugin {
         return $this->route;
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
 	public function prepareExchangeData($request)
     {
         $route = $this->getRoute();
@@ -127,8 +132,8 @@ class GridPlugin extends AbstractPlugin {
             list($moduleMnemo, $field) = explode('_', $name);
             $moduleMnemoAlias = strtolower($filter->filter($moduleMnemo));
             $gridMnemo = $route->getParam('grid');
-            if ($itemId = $request->getPost($moduleMnemo . '_id')) {
-                $gridData[$moduleMnemoAlias][$itemId][$field] = $value;
+            if ($request->getPost()->offsetExists($moduleMnemo . '_id')) {
+                $gridData[$moduleMnemoAlias][$request->getPost($moduleMnemo . '_id')][$field] = $value;
             } elseif ($gridMnemo === $moduleMnemo) {
                 $itemId = $request->getPost('id');
                 $gridData[$moduleMnemoAlias][$itemId][$field] = $value;
