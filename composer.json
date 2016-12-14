@@ -18,7 +18,8 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "php": ">=5.5"
+    "php": ">=5.5",
+    "popov/zfc-simpler": "dev-master"
   },
   "autoload": {
     "psr-4": {
