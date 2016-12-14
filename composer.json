@@ -16,10 +16,10 @@
       "role": "Developer"
     }
   ],
-  "minimum-stability": "stable",
+
   "require": {
     "php": ">=5.5",
-    "popov/zfc-simpler": ">=0.1"
+    "popov/zfc-simpler": "~0.1"
   },
   "autoload": {
     "psr-4": {
