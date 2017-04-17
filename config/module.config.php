@@ -48,11 +48,10 @@ return [
         ],
     ],
 
-	'service_manager' => [
-		//'aliases' => [],
-		//'invokables' => [],
-		'factories' => [
+    'service_manager' => [
+        'factories' => [
             Service\Progress\DataGridContext::class => Service\Progress\Factory\DataGridContextFactory::class,
+            Block\AgereDatagrid::class => \Agere\ZfcDataGrid\Block\Factory\DatagridFactory::class,
         ],
         'delegators' => [
             Service\Progress\DataGridContext::class => [
@@ -62,7 +61,7 @@ return [
         'abstract_factories' => [
             Block\Factory\GridFactory::class,
         ],
-	],
+    ],
 
     'translator' => [
         'translation_file_patterns' => [
