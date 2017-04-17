@@ -13,7 +13,7 @@ use Zend\Mvc\I18n\Translator;
 use Zend\I18n\Translator\TranslatorAwareTrait;
 use DoctrineModule\Persistence\ObjectManagerAwareInterface;
 use DoctrineModule\Persistence\ProvidesObjectManager;
-use Agere\Progress\Service\ContextInterface;
+use Agere\ZfcProgress\Service\ContextInterface;
 use Magere\Entity\Controller\Plugin\ModulePlugin;
 use Magere\Entity\Controller\Plugin\EntityPlugin;
 use Magere\Fields\Service\FieldsService;

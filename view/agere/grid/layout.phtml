@@ -342,7 +342,7 @@ $(document).ready(function () {
                 grid_<?php echo $this->gridId; ?>_loadComplete(data);
             }
             <?php endif; ?>
-            $(this).trigger('jqGrid.loadComplete', [data]);
+	            $(this).trigger('jqGrid.loadComplete', [data]);
         },
 
         beforeSelectRow: function (rowId, e) {
