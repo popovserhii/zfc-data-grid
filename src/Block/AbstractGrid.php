@@ -11,6 +11,8 @@ namespace Agere\ZfcDataGrid\Block;
 
 use Zend\Stdlib\InitializableInterface;
 use Zend\View\Renderer\PhpRenderer;
+use Zend\EventManager\EventManagerAwareInterface;
+use Zend\EventManager\EventManagerAwareTrait;
 use ZfcDatagrid\Datagrid;
 use ZfcDatagrid\Column;
 use ZfcDatagrid\Column\Style;
@@ -20,8 +22,10 @@ use Agere\ZfcDataGridPlugin\Column\Factory\ColumnFactory;
 //use Agere\ZfcDataGrid\View\Helper\Columns as ColumnsHelper;
 use Agere\Block\Block\Admin\Toolbar;
 
-abstract class AbstractGrid implements InitializableInterface
+abstract class AbstractGrid implements EventManagerAwareInterface
 {
+    use EventManagerAwareTrait;
+
     /** @var Datagrid */
     protected $dataGrid;
 
@@ -67,7 +71,13 @@ abstract class AbstractGrid implements InitializableInterface
     }
 
     public function init()
-    {}
+    {
+        $this->getEventManager()->trigger(__FUNCTION__ . '.pre', $this);
+        $this->build();
+        $this->getEventManager()->trigger(__FUNCTION__, $this);
+    }
+
+    abstract public function build();
 
     public function getId()
     {

@@ -71,7 +71,9 @@ class GridFactory implements AbstractFactoryInterface {
 
         //\Zend\Debug\Debug::dump($urlPlugin->fromRoute($route->getMatchedRouteName(), $params)); //die(__METHOD__);
 
-        $grid = clone $sm->get(AgereDatagrid::class);
+        /** @var \ZfcDatagrid\Datagrid $grid */
+        #$grid = clone $sm->get(AgereDatagrid::class);
+        $grid = clone $sm->get('ZfcDatagrid\Datagrid');
         $grid->setRendererName('jqGrid');
         $grid->setTranslator($translator);
         $grid->setToolbarTemplate('agere/grid/toolbar');
