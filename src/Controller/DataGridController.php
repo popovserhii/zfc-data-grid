@@ -10,19 +10,19 @@
 namespace Agere\ZfcDataGrid\Controller;
 
 use Agere\ZfcDataGrid\Controller\Plugin\GridPlugin;
-use Magere\Entity\Controller\Plugin\EntityPlugin;
+use Popov\ZfcEntity\Controller\Plugin\EntityPlugin;
+use Popov\ZfcEntity\Controller\Plugin\ModulePlugin;
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\Filter\Word\CamelCaseToDash;
 use Zend\Stdlib\Exception;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
-use Agere\Core\Service\DomainServiceInterface;
-use Magere\Entity\Model\Entity;
+use Popov\ZfcCore\Service\DomainServiceInterface;
+use Popov\ZfcEntity\Model\Entity;
 
 /**
  * @method GridPlugin grid()
- * @method \Magere\Entity\Controller\Plugin\EntityPlugin entity()
- * @method \Magere\Entity\Controller\Plugin\ModulePlugin module($context = null)
+ * @method EntityPlugin entity()
+ * @method ModulePlugin module($context = null)
  */
 class DataGridController extends AbstractActionController
 {

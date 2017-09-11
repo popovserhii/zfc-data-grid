@@ -9,10 +9,8 @@
  */
 namespace Agere\ZfcDataGrid\Block;
 
-use Zend\Stdlib\InitializableInterface;
+//use Zend\Stdlib\InitializableInterface;
 use Zend\View\Renderer\PhpRenderer;
-use Zend\EventManager\EventManagerAwareInterface;
-use Zend\EventManager\EventManagerAwareTrait;
 use ZfcDatagrid\Datagrid;
 use ZfcDatagrid\Column;
 use ZfcDatagrid\Column\Style;
@@ -22,10 +20,8 @@ use Agere\ZfcDataGridPlugin\Column\Factory\ColumnFactory;
 //use Agere\ZfcDataGrid\View\Helper\Columns as ColumnsHelper;
 use Agere\Block\Block\Admin\Toolbar;
 
-abstract class AbstractGrid implements EventManagerAwareInterface
+abstract class AbstractGrid /*implements InitializableInterface*/
 {
-    use EventManagerAwareTrait;
-
     /** @var Datagrid */
     protected $dataGrid;
 
@@ -71,13 +67,7 @@ abstract class AbstractGrid implements EventManagerAwareInterface
     }
 
     public function init()
-    {
-        $this->getEventManager()->trigger(__FUNCTION__ . '.pre', $this);
-        $this->build();
-        $this->getEventManager()->trigger(__FUNCTION__, $this);
-    }
-
-    abstract public function build();
+    {}
 
     public function getId()
     {
@@ -248,24 +238,6 @@ abstract class AbstractGrid implements EventManagerAwareInterface
     {
         return $this->getDataGrid()->getResponse();
     }
-
-    public function generateLink($route, $key = null, $params = [])
-    {
-        die(__METHOD__);
-        $sm = $this->getServiceLocator();
-
-        return new Column\Formatter\GenerateLink($sm, $route, $key, $params);
-    }
-
-    /*public function getServiceLocator()
-    {
-        static $sm;
-        if (!$sm) {
-            $sm = $this->getViewRenderer()->getServiceLocator()->getServiceLocator();
-        }
-
-        return $sm;
-    }*/
 
     public function getRouteMatch()
     {

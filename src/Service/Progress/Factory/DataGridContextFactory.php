@@ -12,7 +12,7 @@ namespace Agere\ZfcDataGrid\Service\Progress\Factory;
 use Interop\Container\ContainerInterface;
 use Zend\Mvc\Controller\PluginManager;
 use Agere\ZfcDataGrid\Service\Progress\DataGridContext;
-use Magere\Entity\Controller\Plugin\ModulePlugin;
+use Magere\ZfcEntity\Controller\Plugin\ModulePlugin;
 use Magere\Fields\Service\FieldsService;
 use Agere\Simpler\Plugin\SimplerPlugin;
 

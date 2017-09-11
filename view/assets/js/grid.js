@@ -105,9 +105,9 @@ AgereGrid = {
 
 	editFailed: function (rowId, response) {
 		$.jgrid.info_dialog(
-			$.jgrid.regional["ru"].errors.errcap,
+			$.jgrid.regional["en"].errors.errcap,
 			'<div class="ui-state-error">RowID:' + rowId + ' :  ' + response.responseJSON.error + '</div>',
-			$.jgrid.regional["ru"].edit.bClose,
+			$.jgrid.regional["en"].edit.bClose,
 			{buttonalign: 'right', styleUI: 'Bootstrap'}
 		);
 		//alert(response.responseJSON.error);

@@ -18,7 +18,7 @@ use Zend\Mvc\Controller\Plugin\Url;
 use Zend\Form\Form;
 use Zend\Form\Fieldset;
 
-use Magere\Entity\Service\EntityService as ModuleService;
+use Magere\ZfcEntity\Service\EntityService as ModuleService;
 use Magere\Status\Service\StatusChanger;
 use Magere\Status\Form\ButtonFieldset;
 
