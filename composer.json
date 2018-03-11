@@ -25,5 +25,10 @@
       "Popov\\ZfcDataGrid\\": "src/",
       "PopovTest\\ZfcDataGrid\\": "test/"
     }
+  },
+  "extra": {
+    "zf": {
+      "config-provider": "Popov\\ZfcDataGrid\\ConfigProvider"
+    }
   }
 }

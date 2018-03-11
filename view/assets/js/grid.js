@@ -1,4 +1,4 @@
-AgereGrid = {
+PopovGrid = {
 	body: $('body'),
 	onlyOnce: {},
 	grids: $('[id$="_grid"]'),
@@ -68,7 +68,7 @@ AgereGrid = {
 	},
 
 	selectRow: function (e, id, boolean, orgClickEvent) {
-		var self = AgereGrid;
+		var self = PopovGrid;
 		var lastSelection = self.body.data('jqGrid.lastSelection');
 
 		//if (id && id !== lastSelection) {
@@ -127,7 +127,7 @@ AgereGrid = {
 	 * Activate tab grid only once
 	 */
 	activateOnce: function() {
-		var self = AgereGrid;
+		var self = PopovGrid;
 		var hash = arguments[0].target.hash;
 		var grid = $(hash + '_grid');
 
@@ -150,7 +150,7 @@ AgereGrid = {
 	 * @returns {boolean}
 	 */
 	isDeactivated: function(hash) {
-		var self = AgereGrid;
+		var self = PopovGrid;
 
 		if (self.onlyOnce['activateOnce'] == undefined) {
 			self.onlyOnce['activateOnce'] = {};
@@ -180,7 +180,7 @@ AgereGrid = {
 	},
 
 	activateModelOptions: function() {
-		var self = AgereGrid;
+		var self = PopovGrid;
 		var grid = $(arguments[0].target);
 		var hash = 'activateModelOptions-' + grid.attr('id');
 
@@ -206,7 +206,7 @@ AgereGrid = {
 
 	activateSearchDatePicker: function(e, model) {
 		if (model.formatter && model.formatter == 'date') {
-			var self = AgereGrid;
+			var self = PopovGrid;
 			var grid = $(e.target);
 			var id = '#gs_' + self.getGridPrefix(grid) + model.name;
 			$(document).on('mousedown', id, function () {
@@ -232,9 +232,9 @@ AgereGrid = {
 };
 
 jQuery(document).ready(function ($) {
-	AgereGrid.attachEvents();
+	PopovGrid.attachEvents();
 
 	//$('[id$="_grid"]').bind('jqGrid.loadComplete', function() {
-	//	AgereGrid.attachEvents(); // reattach print barcode button
+	//	PopovGrid.attachEvents(); // reattach print barcode button
 	//});
 });

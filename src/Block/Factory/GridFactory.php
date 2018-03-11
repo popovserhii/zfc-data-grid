@@ -2,57 +2,70 @@
 /**
  * Grid Factory
  *
- * @category Agere
- * @package Agere_Grid
+ * @category Popov
+ * @package Popov_Grid
  * @author Popov Sergiy <popov@agere.com.ua>
  * @datetime: 17.02.15 22:24
  */
 
-namespace Agere\ZfcDataGrid\Block\Factory;
+namespace Popov\ZfcDataGrid\Block\Factory;
 
 use DoctrineModule\Persistence\ObjectManagerAwareInterface;
-
-use Zend\ServiceManager\AbstractFactoryInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Doctrine\ORM\EntityManager;
+use Interop\Container\ContainerInterface;
+use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\Stdlib\InitializableInterface;
-
 use Zend\ServiceManager\Exception;
 
-use Agere\ZfcDataGridPlugin\Column\Factory\ColumnFactory;
-use Agere\Block\Service\Plugin\BlockPluginManager;
-use Agere\Block\Block\Admin\ActionPanel;
-use Agere\Current\Plugin\Current;
+use Zend\I18n\Translator\TranslatorInterface;
+use Zend\I18n\Translator\TranslatorAwareInterface;
+
+use Popov\ZfcDataGridPlugin\Column\Factory\ColumnFactory;
+use Popov\ZfcBlock\Plugin\BlockPluginManager;
+//use Popov\ZfcBlock\Block\Admin\ActionPanel;
+use Popov\ZfcCurrent\CurrentHelper;
+use Popov\Simpler\SimplerHelper;
 
 class GridFactory implements AbstractFactoryInterface {
 
-	public function canCreateServiceWithName(ServiceLocatorInterface $sm, $name, $requestedName) {
+    public function canCreate(ContainerInterface $container, $requestedName)
+    {
+        return $this->canCreateServiceWithName($container, $requestedName);
+    }
+
+	public function canCreateServiceWithName(ContainerInterface $sm, $requestedName, array $options = null) {
 		return (substr($requestedName, -4) === 'Grid');
 	}
 
-	public function createServiceWithName(ServiceLocatorInterface $sm, $name, $requestedName) {
-		$className = $this->getClassName($sm, $name, $requestedName);
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        return $this->createServiceWithName($container, $requestedName, $options);
+    }
 
-		$translator = $sm->get('translator');
-		$config = $sm->get('Config');
-		$om = $sm->get('Doctrine\ORM\EntityManager');
-		$cpm = $sm->get('ControllerPluginManager');
-		$vhm = $sm->get('ViewHelperManager');
-		$renderer = $sm->get('ViewRenderer');
+	public function createServiceWithName(ContainerInterface $container, $requestedName, array $options = null) {
+		$className = $this->getClassName($container, $requestedName);
+
+        $translator = $container->get(TranslatorInterface::class);
+		$config = $container->get('config');
+		$om = $container->get(EntityManager::class);
+		//$cpm = $container->get('ControllerPluginManager');
+		//$vhm = $container->get('ViewHelperManager');
+		$renderer = $container->get('ViewRenderer');
         /** @var BlockPluginManager $bpm */
-		$bpm = $sm->get('BlockPluginManager');
-		$urlPlugin = $cpm->get('url');
-		/** @var Current $currentPlugin */
-		$currentPlugin = $cpm->get('current');
-        $simplerPlugin = $cpm->get('simpler');
+		$bpm = $container->get('BlockPluginManager');
+		$urlPlugin = $container->get('url');
+		/** @var CurrentHelper $currentHelper */
+		$currentHelper = $container->get(CurrentHelper::class);
+        $simplerHelper = $container->get(SimplerHelper::class);
 		/** @var \Zend\Mvc\Router\RouteMatch $route */
         // Important get route from current plugin for correct work of forward
 		//$route = $currentPlugin->currentRoute();
 		// Important get route from current controller for correct work of forward
-        $route = $currentPlugin->getController()->getEvent()->getRouteMatch();
+        //$route = $currentHelper->currentRoute();
 		//$paramsPlugin = $currentPlugin->getController()->plugin('params');
 
 		//$route = $sm->get('Application')->getMvcEvent()->getRouteMatch();
-		$params = $route->getParams();
+		//$params = $currentHelper->currentMatchedRouteParams();
 
         //\Zend\Debug\Debug::dump($params); die(__METHOD__);
 
@@ -70,13 +83,16 @@ class GridFactory implements AbstractFactoryInterface {
 
         //\Zend\Debug\Debug::dump($urlPlugin->fromRoute($route->getMatchedRouteName(), $params)); //die(__METHOD__);
 
-		$grid = clone $sm->get('ZfcDatagrid\Datagrid');
+		$grid = clone $container->get('ZfcDatagrid\Datagrid');
         $grid->setRendererName('jqGrid');
 		$grid->setTranslator($translator);
-		$grid->setToolbarTemplate('agere/grid/toolbar');
+		$grid->setToolbarTemplate('grid/toolbar');
 		$grid->setDefaultItemsPerPage(25);
 		//$grid->setUrl($urlPlugin->fromRoute($route->getMatchedRouteName(), $url));
-		$grid->setUrl($urlPlugin->fromRoute($route->getMatchedRouteName(), $params));
+        $grid->setUrl($urlPlugin->fromRoute(
+            $currentHelper->currentMatchedRouteName(),
+            $currentHelper->currentMatchedRouteParams()
+        ));
 
         $rendererOptions = $grid->getToolbarTemplateVariables();
         $rendererOptions['editUrl'] = [
@@ -107,14 +123,14 @@ class GridFactory implements AbstractFactoryInterface {
 			$grid->setTemplate($config['grid_block_config']['template_map']['grid/list']);
 		}*/
 
-        $cpm = $sm->get('DataGridPluginManager');
+        $cpm = $container->get('DataGridPluginManager');
 
         //\Zend\Debug\Debug::dump([get_class($bpm), get_class($bpm->get('block/admin/toolbar'))]); die(__METHOD__);
 
 		//$gridBlock->setToolbar($bpm->get('block/admin/toolbar'));
         $gridBlock->setToolbar($bpm->get('AdminToolbar'));
 
-        $gridBlock->setColumnFactory(new ColumnFactory($cpm, $simplerPlugin, $config));
+        $gridBlock->setColumnFactory(new ColumnFactory($cpm, $simplerHelper, $config));
 		if ($gridBlock instanceof ObjectManagerAwareInterface) {
 			$gridBlock->setObjectManager($om);
 		}
@@ -127,16 +143,16 @@ class GridFactory implements AbstractFactoryInterface {
 		return $gridBlock;
 	}
 
-	public function getClassName($sm, $name, $requestedName) {
+	public function getClassName($sm, $requestedName) {
 		$aliases = $sm->get('Config')['service_manager']['aliases'];
 		$fullName = isset($aliases[$requestedName]) ? $aliases[$requestedName] : '';
 
 		if ((!$existsRequested = class_exists($requestedName)) && (!$existsFull = class_exists($fullName))) {
 			throw new Exception\ServiceNotFoundException(sprintf(
-				'%s: failed retrieving "%s%s"; class does not exist',
-				get_class($this) . '::' . __FUNCTION__,
-				$requestedName,
-				($name ? '(alias: ' . $name . ')' : '')
+				'%s: failed retrieving "%s%s"; class does not exist'
+                , get_class($this) . '::' . __FUNCTION__
+                , $requestedName
+                //, ($name ? '(alias: ' . $name . ')' : '')
 			));
 		}
 		$className = $existsRequested ? $requestedName : $fullName;

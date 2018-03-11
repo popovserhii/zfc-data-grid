@@ -1,13 +1,13 @@
 <?php
 /**
- * @category Agere
- * @package Agere_DataGrid
+ * @category Popov
+ * @package Popov_DataGrid
  * @author Popov Sergiy <popov@agere.com.ua>
  * @datetime: 04.04.2016 0:19
  */
-namespace Agere\ZfcDataGrid\Controller\Factory;
+namespace Popov\ZfcDataGrid\Controller\Factory;
 
-use Agere\ZfcDataGrid\Controller\DataGridController;
+use Popov\ZfcDataGrid\Controller\DataGridController;
 use Zend\Stdlib\Exception;
 
 class DataGridControllerFactory

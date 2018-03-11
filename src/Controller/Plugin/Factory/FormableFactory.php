@@ -2,18 +2,18 @@
 /**
  * Statusable plugin factory
  *
- * @category Agere
- * @package Agere_Status
+ * @category Popov
+ * @package Popov_Status
  * @author Popov Sergiy <popov@agere.com.ua>
  * @datetime: 04.02.15 10:30
  */
 
-namespace Agere\ZfcDataGrid\Controller\Plugin\Factory;
+namespace Popov\ZfcDataGrid\Controller\Plugin\Factory;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 //use Zend\View\HelperPluginManager;
 
-use Agere\ZfcDataGrid\Controller\Plugin\Formable;
+use Popov\ZfcDataGrid\Controller\Plugin\Formable;
 
 class FormableFactory {
 

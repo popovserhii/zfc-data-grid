@@ -2,14 +2,14 @@
 /**
  * Zfc Data Grid Controller
  *
- * @category Agere
- * @package Agere_ZfcDataGrid
+ * @category Popov
+ * @package Popov_ZfcDataGrid
  * @author Popov Sergiy <popov@agere.com.ua>
  * @datetime: 10.09.2016 20:12
  */
-namespace Agere\ZfcDataGrid\Controller;
+namespace Popov\ZfcDataGrid\Controller;
 
-use Agere\ZfcDataGrid\Controller\Plugin\GridPlugin;
+use Popov\ZfcDataGrid\Controller\Plugin\GridPlugin;
 use Popov\ZfcEntity\Controller\Plugin\EntityPlugin;
 use Popov\ZfcEntity\Controller\Plugin\ModulePlugin;
 use Zend\Mvc\Controller\AbstractActionController;

@@ -2,30 +2,32 @@
 /**
  * Abstract class for Grid
  *
- * @category Agere
- * @package Agere_Grid
+ * @category Popov
+ * @package Popov_Grid
  * @author Popov Sergiy <popov@agere.com.ua>
  * @datetime: 11.01.2016 14:12
  */
-namespace Agere\ZfcDataGrid\Block;
+namespace Popov\ZfcDataGrid\Block;
 
 //use Zend\Stdlib\InitializableInterface;
+use Popov\ZfcCurrent\CurrentHelper;
 use Zend\View\Renderer\PhpRenderer;
 use ZfcDatagrid\Datagrid;
 use ZfcDatagrid\Column;
 use ZfcDatagrid\Column\Style;
 use ZfcDatagrid\Column\Type;
 
-use Agere\ZfcDataGridPlugin\Column\Factory\ColumnFactory;
-//use Agere\ZfcDataGrid\View\Helper\Columns as ColumnsHelper;
-use Agere\Block\Block\Admin\Toolbar;
+use Popov\ZfcDataGridPlugin\Column\Factory\ColumnFactory;
+//use Popov\ZfcDataGrid\View\Helper\Columns as ColumnsHelper;
+use Popov\Block\Block\Admin\Toolbar;
 
 abstract class AbstractGrid /*implements InitializableInterface*/
 {
     /** @var Datagrid */
     protected $dataGrid;
 
-    protected $routeMatch;
+    /** @var CurrentHelper */
+    protected $currentHelper;
 
     /** @return PhpRenderer */
     protected $viewRenderer;
@@ -58,10 +60,10 @@ abstract class AbstractGrid /*implements InitializableInterface*/
         ],*/
     ];
 
-    public function __construct(Datagrid $dataGrid, $routeMatch, $renderer)
+    public function __construct(Datagrid $dataGrid, $currentHelper, $renderer)
     {
         $this->dataGrid = $dataGrid;
-        $this->routeMatch = $routeMatch;
+        $this->currentHelper = $currentHelper;
         $this->viewRenderer = $renderer;
         $this->initToolbarCallback();
     }
@@ -97,7 +99,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
             }
 
 			$toolbar = $this->getToolbar();
-			$route = $this->getRouteMatch();
+			$current = $this->getCurrentHelper();
 
             $toolbar->addButtonsWrapperClass('pull-right');
             // add button "Create" if relative label set
@@ -106,7 +108,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
                 'title' => $this->getCreateButtonTitle(),
                 'href' => [
                     'default' => [ // route name
-                        'controller' => $route->getParam('controller'), // route params
+                        'controller' => $current->currentResource(), // route params
                         'action' => 'create',
                     ]
                 ],
@@ -119,7 +121,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
                 'title' => $this->getBackButtonTitle(),
                 'href' => [
                     'default' => [ // route name
-                        'controller' => $route->getParam('controller'), // route params
+                        'controller' => $current->currentResource(), // route params
                         'action' => 'back',
                     ]
                 ],
@@ -171,15 +173,15 @@ abstract class AbstractGrid /*implements InitializableInterface*/
     public function prepareActionColumnOld()
     {
         $grid = $this->getDataGrid();
-        $route = $this->getRouteMatch();
+        $current = $this->getCurrentHelper();
         $view = $this->getViewRenderer();
 
         foreach ($this->actions as $action) {
             $action = preg_replace('/([a-z]+)+([A-Z])/', '$1-$2', $grid->getId());
             $action = strtolower($action);
-            $action = $view->url($route->getMatchedRouteName(), [
+            $action = $view->url($current->currentMatchedRouteName(), [
                 //'controller' => $grid->getId(),
-                'controller' => $route->getParam('controller'),
+                'controller' => $current->currentResource(),
                 'action' => 'edit-' . $action,
             ]);
 
@@ -239,14 +241,14 @@ abstract class AbstractGrid /*implements InitializableInterface*/
         return $this->getDataGrid()->getResponse();
     }
 
-    public function getRouteMatch()
+    public function getCurrentHelper()
     {
         /*static $routeMatch;
         if (!$routeMatch) {
             $routeMatch = $this->getServiceLocator()->get('Application')->getMvcEvent()->getRouteMatch();
         }*/
 
-        return $this->routeMatch;
+        return $this->currentHelper;
     }
 
     public function setToolbar(Toolbar $toolbar)

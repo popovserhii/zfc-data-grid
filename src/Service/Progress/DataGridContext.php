@@ -2,22 +2,22 @@
 /**
  * Enter description here...
  *
- * @category Agere
- * @package Agere_<package>
+ * @category Popov
+ * @package Popov_<package>
  * @author Popov Sergiy <popov@agere.com.ua>
  * @datetime: 02.11.2016 7:21
  */
-namespace Agere\ZfcDataGrid\Service\Progress;
+namespace Popov\ZfcDataGrid\Service\Progress;
 
 use Zend\Mvc\I18n\Translator;
 use Zend\I18n\Translator\TranslatorAwareTrait;
 use DoctrineModule\Persistence\ObjectManagerAwareInterface;
 use DoctrineModule\Persistence\ProvidesObjectManager;
-use Agere\Progress\Service\ContextInterface;
+use Popov\Progress\Service\ContextInterface;
 use Magere\ZfcEntity\Controller\Plugin\ModulePlugin;
 use Magere\ZfcEntity\Controller\Plugin\EntityPlugin;
 use Magere\Fields\Service\FieldsService;
-use Agere\Simpler\Plugin\SimplerPlugin;
+use Popov\Simpler\Plugin\SimplerPlugin;
 
 /**
  * @method Translator getTranslator()

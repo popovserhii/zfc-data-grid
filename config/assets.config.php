@@ -1,5 +1,5 @@
 <?php
-namespace Agere\ZfcDataGrid;
+namespace Popov\ZfcDataGrid;
 
 return [
     //'assetic_configuration' => [

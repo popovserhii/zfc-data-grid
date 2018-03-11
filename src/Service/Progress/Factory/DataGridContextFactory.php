@@ -2,19 +2,19 @@
 /**
  * Progress Service Factory
  *
- * @category Agere
- * @package Agere_ZfcDataGrid
+ * @category Popov
+ * @package Popov_ZfcDataGrid
  * @author Popov Sergiy <popov@agere.com.ua>
  * @datetime: 03.11.16 19:01
  */
-namespace Agere\ZfcDataGrid\Service\Progress\Factory;
+namespace Popov\ZfcDataGrid\Service\Progress\Factory;
 
 use Interop\Container\ContainerInterface;
 use Zend\Mvc\Controller\PluginManager;
-use Agere\ZfcDataGrid\Service\Progress\DataGridContext;
+use Popov\ZfcDataGrid\Service\Progress\DataGridContext;
 use Magere\ZfcEntity\Controller\Plugin\ModulePlugin;
 use Magere\Fields\Service\FieldsService;
-use Agere\Simpler\Plugin\SimplerPlugin;
+use Popov\Simpler\Plugin\SimplerPlugin;
 
 class DataGridContextFactory
 {

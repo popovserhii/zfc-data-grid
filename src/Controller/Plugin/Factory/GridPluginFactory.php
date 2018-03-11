@@ -2,16 +2,16 @@
 /**
  * Grid Plugin Factory
  *
- * @category Agere
- * @package Agere_Grid
+ * @category Popov
+ * @package Popov_Grid
  * @author Popov Sergiy <popov@agere.com.ua>
  * @datetime: 26.11.2016 09:30
  */
 
-namespace Agere\ZfcDataGrid\Controller\Plugin\Factory;
+namespace Popov\ZfcDataGrid\Controller\Plugin\Factory;
 
 use Interop\Container\ContainerInterface;
-use Agere\ZfcDataGrid\Controller\Plugin\GridPlugin;
+use Popov\ZfcDataGrid\Controller\Plugin\GridPlugin;
 
 class GridPluginFactory {
 

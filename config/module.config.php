@@ -1,5 +1,6 @@
 <?php
-namespace Agere\ZfcDataGrid;
+
+namespace Popov\ZfcDataGrid;
 
 return [
     'assetic_configuration' => require_once 'assets.config.php',
@@ -10,6 +11,23 @@ return [
         ]
     ],
 
+    'dependencies' => [
+        //'aliases' => [],
+        //'invokables' => [],
+        'factories' => [
+            Service\Progress\DataGridContext::class => Service\Progress\Factory\DataGridContextFactory::class,
+        ],
+        'delegators' => [
+            Service\Progress\DataGridContext::class => [
+                \Stagem\Translator\Service\Factory\TranslatorDelegatorFactory::class
+            ]
+        ],
+        'abstract_factories' => [
+            Block\Factory\GridFactory::class,
+        ],
+    ],
+
+    // mvc
     'controllers' => [
         'aliases' => [
             'data-grid' => Controller\DataGridController::class,
@@ -19,6 +37,7 @@ return [
         ],
     ],
 
+    // mvc
     'controller_plugins' => [
         'aliases' => [
             'grid' => Controller\Plugin\GridPlugin::class,
@@ -30,12 +49,23 @@ return [
         ],
     ],
 
+    // middleware
+    'templates' => [
+        'map' => [
+            'grid/toolbar' => __DIR__ . '/../view/grid/toolbar.phtml',
+            'zfc-datagrid/renderer/jqGrid/layout' => __DIR__ . '/../view/grid/layout.phtml',
+            'zfc-datagrid/renderer/jqGrid/footer' => __DIR__ . '/../view/grid/footer.phtml',
+            'zfc-datagrid/toolbar/export' => __DIR__ . '/../view/grid/export.phtml',
+        ],
+    ],
+
+    // mvc
     'view_manager' => [
         'template_map' => [
-            'agere/grid/toolbar' => __DIR__ . '/../view/agere/grid/toolbar.phtml',
-            'zfc-datagrid/renderer/jqGrid/layout' => __DIR__ . '/../view/agere/grid/layout.phtml',
-            'zfc-datagrid/renderer/jqGrid/footer' => __DIR__ . '/../view/agere/grid/footer.phtml',
-            'zfc-datagrid/toolbar/export' => __DIR__ . '/../view/agere/grid/export.phtml',
+            'grid/toolbar' => __DIR__ . '/../view/grid/toolbar.phtml',
+            'zfc-datagrid/renderer/jqGrid/layout' => __DIR__ . '/../view/grid/layout.phtml',
+            'zfc-datagrid/renderer/jqGrid/footer' => __DIR__ . '/../view/grid/footer.phtml',
+            'zfc-datagrid/toolbar/export' => __DIR__ . '/../view/grid/export.phtml',
         ],
         'template_path_stack' => [
             __DIR__ . '/../view',
@@ -47,22 +77,6 @@ return [
             'jqgridColumns' => View\Helper\Columns::class, // overwrite default jqGrid helper
         ],
     ],
-
-	'service_manager' => [
-		//'aliases' => [],
-		//'invokables' => [],
-		'factories' => [
-            Service\Progress\DataGridContext::class => Service\Progress\Factory\DataGridContextFactory::class,
-        ],
-        'delegators' => [
-            Service\Progress\DataGridContext::class => [
-                \Agere\Translator\Service\Factory\TranslatorDelegatorFactory::class
-            ]
-        ],
-        'abstract_factories' => [
-            Block\Factory\GridFactory::class,
-        ],
-	],
 
     'translator' => [
         'translation_file_patterns' => [

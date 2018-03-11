@@ -4,13 +4,13 @@
  *
  * This allow add status buttons to different fieldsets in form
  *
- * @category Agere
- * @package Agere_Grid
+ * @category Popov
+ * @package Popov_Grid
  * @author Popov Sergiy <popov@agere.com.ua>
  * @datetime: 26.03.16 19:37
  */
 
-namespace Agere\ZfcDataGrid\Controller\Plugin;
+namespace Popov\ZfcDataGrid\Controller\Plugin;
 
 use Zend\Filter\Word\CamelCaseToDash;
 use Zend\Stdlib\Exception;
@@ -24,7 +24,7 @@ use Magere\ZfcEntity\Service\EntityService as ModuleService;
 use Magere\Status\Service\StatusChanger;
 use Magere\Status\Form\ButtonFieldset;
 
-use Agere\Current\Plugin\Current;
+use Popov\Current\Plugin\Current;
 
 class GridPlugin extends AbstractPlugin {
 

@@ -2,12 +2,12 @@
 /**
  * Overwrite default jqGrid helper
  *
- * @category Agere
- * @package Agere_Helper
+ * @category Popov
+ * @package Popov_Helper
  * @author Popov Sergiy <popov@agere.com.ua>
  * @datetime: 04.01.2016 15:15
  */
-namespace Agere\ZfcDataGrid\View\Helper;
+namespace Popov\ZfcDataGrid\View\Helper;
 
 use ZfcDatagrid\Renderer\JqGrid\View\Helper\Columns as ZfcDatagridColumns;
 

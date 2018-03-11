@@ -4,13 +4,13 @@
  *
  * This allow add status buttons to different fieldsets in form
  *
- * @category Agere
- * @package Agere_Grid
+ * @category Popov
+ * @package Popov_Grid
  * @author Popov Sergiy <popov@agere.com.ua>
  * @datetime: 26.03.16 19:37
  */
 
-namespace Agere\ZfcDataGrid\Controller\Plugin;
+namespace Popov\ZfcDataGrid\Controller\Plugin;
 
 use Zend\Stdlib\Exception;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
@@ -22,7 +22,7 @@ use Magere\ZfcEntity\Service\EntityService as ModuleService;
 use Magere\Status\Service\StatusChanger;
 use Magere\Status\Form\ButtonFieldset;
 
-use Agere\Current\Plugin\Current;
+use Popov\Current\Plugin\Current;
 
 class Formable extends AbstractPlugin {
 
@@ -120,7 +120,7 @@ class Formable extends AbstractPlugin {
 
 
 		if ($validationGroup) {
-            if ($grid instanceof \Agere\Invoice\Block\Grid\InvoiceProductGrid) { // @todo Видалити хардкод
+            if ($grid instanceof \Popov\Invoice\Block\Grid\InvoiceProductGrid) { // @todo Видалити хардкод
                 $this->prepareColumnsInvoiceProductGrid($validationGroup, $form);
             } else {
                 $this->prepareColumns($validationGroup, $form);
