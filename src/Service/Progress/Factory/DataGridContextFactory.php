@@ -4,7 +4,7 @@
  *
  * @category Popov
  * @package Popov_ZfcDataGrid
- * @author Popov Sergiy <popov@agere.com.ua>
+ * @author Serhii Popov <popow.serhii@gmail.com>
  * @datetime: 03.11.16 19:01
  */
 namespace Popov\ZfcDataGrid\Service\Progress\Factory;

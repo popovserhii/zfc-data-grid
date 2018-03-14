@@ -15,11 +15,20 @@
 
 namespace Popov\ZfcDataGrid;
 
+use Zend\Stdlib\ArrayUtils;
+
 class ConfigProvider
 {
     public function __invoke()
     {
-        $config = require __DIR__ . '/../config/module.config.php';
+        $originConfig = require __DIR__ . '/../../../zfc-datagrid/zfc-datagrid/config/module.config.php';
+        $originConfig['dependencies'] = $originConfig['service_manager'];
+        unset($originConfig['service_manager']);
+
+        $customConfig = require __DIR__ . '/../config/module.config.php';
+
+        $config = ArrayUtils::merge($originConfig, $customConfig);
+
         unset($config['controllers']);
         unset($config['controllers']);
         unset($config['controller_plugins']);

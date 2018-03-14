@@ -2,17 +2,21 @@
 namespace Popov\ZfcDataGrid;
 
 return [
-    //'assetic_configuration' => [
-    'default' => [
+    /*'default' => [
         'assets' => [
             '@jqGrid_css',
             '@jqGrid_js',
             //'@grid_css',
             '@grid_js',
         ],
-        /*'options' => [
-            'mixin' => true,
-        ],*/
+    ],*/
+    'routes' => [
+        'admin(.*)' => [
+            '@jqGrid_css',
+            '@jqGrid_js',
+            //'@grid_css',
+            '@grid_js',
+        ],
     ],
     'modules' => [
         __NAMESPACE__ => [

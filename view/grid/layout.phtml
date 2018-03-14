@@ -180,8 +180,9 @@ if($paginator->getItemCountPerPage() === $paginator->getTotalItemCount()){
 <div id="<?php echo $this->gridId; ?>_pager"></div>
 
 <script type="text/javascript">
+	<?php /** @var \Zend\Diactoros\ServerRequest */ ?>
 <?php $request = $this->current('request') ?>
-<?php if (!$request->isXmlHttpRequest()) : ?>
+<?php if (!$request->hasHeader('X-Requested-With')) : ?>
     <?php $this->inlineScript()->captureStart(); ?>
 <?php endif; ?>
 
@@ -508,7 +509,7 @@ $(document).ready(function () {
     <?php endif; ?>
 });
 
-<?php if (!$request->isXmlHttpRequest()) : ?>
+<?php if (!$request->hasHeader('X-Requested-With')) : ?>
     <?php $this->inlineScript()->captureEnd(); ?>
 <?php endif; ?>
 </script>

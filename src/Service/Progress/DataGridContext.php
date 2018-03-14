@@ -4,7 +4,7 @@
  *
  * @category Popov
  * @package Popov_<package>
- * @author Popov Sergiy <popov@agere.com.ua>
+ * @author Serhii Popov <popow.serhii@gmail.com>
  * @datetime: 02.11.2016 7:21
  */
 namespace Popov\ZfcDataGrid\Service\Progress;

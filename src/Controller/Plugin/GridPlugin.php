@@ -6,7 +6,7 @@
  *
  * @category Popov
  * @package Popov_Grid
- * @author Popov Sergiy <popov@agere.com.ua>
+ * @author Serhii Popov <popow.serhii@gmail.com>
  * @datetime: 26.03.16 19:37
  */
 

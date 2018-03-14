@@ -4,7 +4,7 @@
  *
  * @category Popov
  * @package Popov_Grid
- * @author Popov Sergiy <popov@agere.com.ua>
+ * @author Serhii Popov <popow.serhii@gmail.com>
  * @datetime: 17.02.15 22:24
  */
 
@@ -16,9 +16,9 @@ use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\Stdlib\InitializableInterface;
 use Zend\ServiceManager\Exception;
-
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\I18n\Translator\TranslatorAwareInterface;
+use Zend\View\HelperPluginManager;
 
 use Popov\ZfcDataGridPlugin\Column\Factory\ColumnFactory;
 use Popov\ZfcBlock\Plugin\BlockPluginManager;
@@ -49,15 +49,15 @@ class GridFactory implements AbstractFactoryInterface {
 		$config = $container->get('config');
 		$om = $container->get(EntityManager::class);
 		//$cpm = $container->get('ControllerPluginManager');
-		//$vhm = $container->get('ViewHelperManager');
-		$renderer = $container->get('ViewRenderer');
+		$vhm = $container->get(HelperPluginManager::class);
+		//$renderer = $container->get('ViewRenderer');
         /** @var BlockPluginManager $bpm */
 		$bpm = $container->get('BlockPluginManager');
-		$urlPlugin = $container->get('url');
+		/** @var \Zend\Expressive\ZendView\UrlHelper $urlPlugin */
+		$urlPlugin = $vhm->get('url');
 		/** @var CurrentHelper $currentHelper */
 		$currentHelper = $container->get(CurrentHelper::class);
         $simplerHelper = $container->get(SimplerHelper::class);
-		/** @var \Zend\Mvc\Router\RouteMatch $route */
         // Important get route from current plugin for correct work of forward
 		//$route = $currentPlugin->currentRoute();
 		// Important get route from current controller for correct work of forward
@@ -89,16 +89,17 @@ class GridFactory implements AbstractFactoryInterface {
 		$grid->setToolbarTemplate('grid/toolbar');
 		$grid->setDefaultItemsPerPage(25);
 		//$grid->setUrl($urlPlugin->fromRoute($route->getMatchedRouteName(), $url));
-        $grid->setUrl($urlPlugin->fromRoute(
+        $grid->setUrl($urlPlugin(
             $currentHelper->currentMatchedRouteName(),
             $currentHelper->currentMatchedRouteParams()
         ));
 
         $rendererOptions = $grid->getToolbarTemplateVariables();
         $rendererOptions['editUrl'] = [
-            'route' => 'default/wildcard',
+            //'route' => 'default/wildcard',
+            'route' => 'admin/default',
             'params' => [
-                'controller' => 'data-grid',
+                'resource' => 'data-grid',
                 'action' => 'modify',
             ]
         ];
@@ -115,7 +116,7 @@ class GridFactory implements AbstractFactoryInterface {
 
         //$jqGridColumns = $vhm->get('jqgridColumns');
 
-		$gridBlock = new $className($grid, $route, $renderer);
+		$gridBlock = new $className($grid, $currentHelper);
 
 		/*if (isset($config['grid_block_config']['template_map']['grid/list'])
 			&& $config['grid_block_config']['template_map']['grid/list']
@@ -143,19 +144,20 @@ class GridFactory implements AbstractFactoryInterface {
 		return $gridBlock;
 	}
 
-	public function getClassName($sm, $requestedName) {
-		$aliases = $sm->get('Config')['service_manager']['aliases'];
-		$fullName = isset($aliases[$requestedName]) ? $aliases[$requestedName] : '';
+	public function getClassName($container, $requestedName) {
+		//$aliases = $container->get('config')['service_manager']['aliases'];
+		//$fullName = isset($aliases[$requestedName]) ? $aliases[$requestedName] : '';
 
-		if ((!$existsRequested = class_exists($requestedName)) && (!$existsFull = class_exists($fullName))) {
+		//if ((!$existsRequested = class_exists($requestedName)) && (!$existsFull = class_exists($fullName))) {
+		if ((!$container->has($requestedName))) {
 			throw new Exception\ServiceNotFoundException(sprintf(
-				'%s: failed retrieving "%s%s"; class does not exist'
+				'%s: failed retrieving "%s"; class does not exist'
                 , get_class($this) . '::' . __FUNCTION__
                 , $requestedName
                 //, ($name ? '(alias: ' . $name . ')' : '')
 			));
 		}
-		$className = $existsRequested ? $requestedName : $fullName;
+		$className = $requestedName;
 
 		return $className;
 	}

@@ -4,7 +4,7 @@
  *
  * @category Popov
  * @package Popov_Grid
- * @author Popov Sergiy <popov@agere.com.ua>
+ * @author Serhii Popov <popow.serhii@gmail.com>
  * @datetime: 11.01.2016 14:12
  */
 namespace Popov\ZfcDataGrid\Block;
@@ -19,7 +19,7 @@ use ZfcDatagrid\Column\Type;
 
 use Popov\ZfcDataGridPlugin\Column\Factory\ColumnFactory;
 //use Popov\ZfcDataGrid\View\Helper\Columns as ColumnsHelper;
-use Popov\Block\Block\Admin\Toolbar;
+use Popov\ZfcBlock\Block\Admin\Toolbar;
 
 abstract class AbstractGrid /*implements InitializableInterface*/
 {
@@ -46,7 +46,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
         /*'view' => [
             'route' => 'default',
             'params' => [
-                'controller' => null,
+                'resource' => null,
                 'action' => 'view',
             ],
             'options'
@@ -54,17 +54,17 @@ abstract class AbstractGrid /*implements InitializableInterface*/
         'edit' => [
             'route' => 'default/id',
             'params' => [
-                'controller' => null,
+                'resource' => null,
                 'action' => 'edit',
             ],
         ],*/
     ];
 
-    public function __construct(Datagrid $dataGrid, $currentHelper, $renderer)
+    public function __construct(Datagrid $dataGrid, CurrentHelper $currentHelper)
     {
         $this->dataGrid = $dataGrid;
         $this->currentHelper = $currentHelper;
-        $this->viewRenderer = $renderer;
+        $this->viewRenderer = $currentHelper->currentRenderer();
         $this->initToolbarCallback();
     }
 
@@ -108,7 +108,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
                 'title' => $this->getCreateButtonTitle(),
                 'href' => [
                     'default' => [ // route name
-                        'controller' => $current->currentResource(), // route params
+                        'resource' => $current->currentResource(), // route params
                         'action' => 'create',
                     ]
                 ],
@@ -121,7 +121,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
                 'title' => $this->getBackButtonTitle(),
                 'href' => [
                     'default' => [ // route name
-                        'controller' => $current->currentResource(), // route params
+                        'resource' => $current->currentResource(), // route params
                         'action' => 'back',
                     ]
                 ],
@@ -181,7 +181,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
             $action = strtolower($action);
             $action = $view->url($current->currentMatchedRouteName(), [
                 //'controller' => $grid->getId(),
-                'controller' => $current->currentResource(),
+                'resource' => $current->currentResource(),
                 'action' => 'edit-' . $action,
             ]);
 
@@ -222,7 +222,9 @@ abstract class AbstractGrid /*implements InitializableInterface*/
             'action' => 'edit-' . $action,
         ]);
     }*/
-
+    /**
+     * @return Datagrid
+     */
     public function getDataGrid()
     {
         return $this->dataGrid;

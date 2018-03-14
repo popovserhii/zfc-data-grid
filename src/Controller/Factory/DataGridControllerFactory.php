@@ -2,7 +2,7 @@
 /**
  * @category Popov
  * @package Popov_DataGrid
- * @author Popov Sergiy <popov@agere.com.ua>
+ * @author Serhii Popov <popow.serhii@gmail.com>
  * @datetime: 04.04.2016 0:19
  */
 namespace Popov\ZfcDataGrid\Controller\Factory;

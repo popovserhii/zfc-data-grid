@@ -32,7 +32,7 @@ $paginator = $this->paginator;
 
 <script>
 <?php $request = $this->current('request') ?>
-<?php if (!$request->isXmlHttpRequest()) : ?>
+<?php if (!$request->hasHeader('X-Requested-With')) : ?>
     <?php $this->inlineScript()->captureStart(); ?>
 <?php endif; ?>
 
@@ -150,7 +150,7 @@ function <?php echo $this->gridId; ?>_customPaginator(gridId){
     
 	return html;
 }
-<?php if (!$request->isXmlHttpRequest()) : ?>
+<?php if (!$request->hasHeader('X-Requested-With')) : ?>
     <?php $this->inlineScript()->captureEnd(); ?>
 <?php endif; ?>
 </script>

@@ -4,7 +4,7 @@
  *
  * @category Popov
  * @package Popov_Helper
- * @author Popov Sergiy <popov@agere.com.ua>
+ * @author Serhii Popov <popow.serhii@gmail.com>
  * @datetime: 04.01.2016 15:15
  */
 namespace Popov\ZfcDataGrid\View\Helper;
@@ -17,10 +17,15 @@ class Columns extends ZfcDatagridColumns {
 
 	protected $columnModelOptions = [];
 
-	/** All parent methods must be protected or public */
-
 	public function __invoke(array $columns) {
 		$return = [];
+
+        $class = new \ReflectionClass($this);
+        $translateMethod = $class->getMethod('translate');
+        $translateMethod->setAccessible(true);
+
+        $getFormatterMethod = $class->getMethod('getFormatter');
+        $getFormatterMethod->setAccessible(true);
 
 		foreach ($columns as $column) {
 			/* @var $column \ZfcDatagrid\Column\AbstractColumn */
@@ -28,7 +33,8 @@ class Columns extends ZfcDatagridColumns {
 			$options = [
 				'name'  => (string) $column->getUniqueId(),
 				'index' => (string) $column->getUniqueId(),
-				'label' => $this->translate((string) $column->getLabel()),
+				//'label' => $this->translate((string) $column->getLabel()),
+				'label' => $translateMethod->invokeArgs($this, [(string) $column->getLabel()]),
 
 				'width'    => $column->getWidth(),
 				'hidden'   => (bool) $column->isHidden(),
@@ -39,7 +45,8 @@ class Columns extends ZfcDatagridColumns {
 			/*
 			 * Formatting
 			 */
-			$formatter = $this->getFormatter($column);
+			//$formatter = $this->getFormatter($column);
+			$formatter = $getFormatterMethod->invokeArgs($this, [$column]);
 			if ($formatter != '') {
 				$options['formatter'] = (string) $formatter;
 			}

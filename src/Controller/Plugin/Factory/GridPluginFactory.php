@@ -4,7 +4,7 @@
  *
  * @category Popov
  * @package Popov_Grid
- * @author Popov Sergiy <popov@agere.com.ua>
+ * @author Serhii Popov <popow.serhii@gmail.com>
  * @datetime: 26.11.2016 09:30
  */
 

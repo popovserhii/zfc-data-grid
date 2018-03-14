@@ -4,7 +4,7 @@
  *
  * @category Popov
  * @package Popov_ZfcDataGrid
- * @author Popov Sergiy <popov@agere.com.ua>
+ * @author Serhii Popov <popow.serhii@gmail.com>
  * @datetime: 10.09.2016 20:12
  */
 namespace Popov\ZfcDataGrid\Controller;
