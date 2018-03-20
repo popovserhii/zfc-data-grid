@@ -90,8 +90,8 @@ class GridFactory implements AbstractFactoryInterface {
 		$grid->setDefaultItemsPerPage(25);
 		//$grid->setUrl($urlPlugin->fromRoute($route->getMatchedRouteName(), $url));
         $grid->setUrl($urlPlugin(
-            $currentHelper->currentMatchedRouteName(),
-            $currentHelper->currentMatchedRouteParams()
+            $currentHelper->currentRouteName(),
+            $currentHelper->currentRouteParams()
         ));
 
         $rendererOptions = $grid->getToolbarTemplateVariables();
