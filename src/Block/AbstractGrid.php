@@ -107,7 +107,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
                 'label' => '+',
                 'title' => $this->getCreateButtonTitle(),
                 'href' => [
-                    'default' => [ // route name
+                    'admin/default' => [ // route name
                         'resource' => $current->currentResource(), // route params
                         'action' => 'create',
                     ]
@@ -120,7 +120,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
                 'label' => $this->getBackButtonTitle(),
                 'title' => $this->getBackButtonTitle(),
                 'href' => [
-                    'default' => [ // route name
+                    'admin/default' => [ // route name
                         'resource' => $current->currentResource(), // route params
                         'action' => 'back',
                     ]
