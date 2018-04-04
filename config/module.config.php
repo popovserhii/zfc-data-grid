@@ -16,6 +16,7 @@ return [
         //'invokables' => [],
         'factories' => [
             Service\Progress\DataGridContext::class => Service\Progress\Factory\DataGridContextFactory::class,
+            Action\Admin\ModifyAction::class => Action\Admin\Factory\ModifyActionFactory::class,
         ],
         'delegators' => [
             Service\Progress\DataGridContext::class => [

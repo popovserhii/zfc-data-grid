@@ -10,8 +10,8 @@ $(document).on('click', '.ui-jqgrid-btable tr a[class^="remove"], .ui-jqgrid-bta
 	grid.jqGrid('delGridRow', rowId, {
 		url: elm.attr('href'),
 		reloadAfterSubmit: true,
-		caption: 'Удаление записи',
-		msg: 'Вы действительно хотите удалить запись №' + rowId + '?',
+		//caption: 'Удаление записи',
+		//msg: 'Вы действительно хотите удалить запись №' + rowId + '?',
 		bSubmit: 'Удалить',
 		bCancel: 'Отмена',
 		height: 'auto',
@@ -44,6 +44,7 @@ $(document).on('click', '.ui-jqgrid-btable tr a[class^="remove"], .ui-jqgrid-bta
 		},
 		errorTextFormat: function (response) {
 			var json = jQuery.parseJSON(response.responseText);
+			console.log(json);
 			return json.message;
 		}
 	});
