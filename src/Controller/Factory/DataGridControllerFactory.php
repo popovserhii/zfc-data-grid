@@ -37,7 +37,7 @@ class DataGridControllerFactory
         $route = $router->match($request);
         //$this->slug = $route->getParam("slug");
 
-        if (!($gridId = $route->getParam('grid'))) {
+        if (!($gridId = $route->getParam('id'))) {
             throw new Exception\InvalidArgumentException(
                 'Route key "grid" must be set for correct work edit functionality'
             );

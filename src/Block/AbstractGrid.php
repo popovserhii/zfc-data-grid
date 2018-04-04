@@ -170,58 +170,6 @@ abstract class AbstractGrid /*implements InitializableInterface*/
         //return $actions;
     }
 
-    public function prepareActionColumnOld()
-    {
-        $grid = $this->getDataGrid();
-        $current = $this->getCurrentHelper();
-        $view = $this->getViewRenderer();
-
-        foreach ($this->actions as $action) {
-            $action = preg_replace('/([a-z]+)+([A-Z])/', '$1-$2', $grid->getId());
-            $action = strtolower($action);
-            $action = $view->url($current->currentMatchedRouteName(), [
-                //'controller' => $grid->getId(),
-                'resource' => $current->currentResource(),
-                'action' => 'edit-' . $action,
-            ]);
-
-
-            $bg = new Style\BackgroundColor([224, 226, 229]);
-            $fmtr = new Column\Formatter\Link();
-            $fmtr->setAttribute('class', 'pencil-edit-icon');
-            \Zend\Debug\Debug::dump($action
-                . '/'
-                . $fmtr->getColumnValuePlaceholder($grid->getColumnByUniqueId($grid->getId() . '_id')));
-            die(__METHOD__);
-            $fmtr->setLink($action . '/' . $fmtr->getColumnValuePlaceholder($grid->getColumnByUniqueId($grid->getId()
-                    . '_id')));
-            $actions = new Column\Action('edit');
-            $actions->setLabel(' ');
-            //$actions->addAction($viewAction);
-            $actions->setTranslationEnabled();
-            $actions->setFormatters([$fmtr]);
-            $actions->addStyle($bg);
-            $actions->setWidth(1);
-            $grid->addColumn($actions);
-        }
-
-        return $actions;
-    }
-
-    /*public function prepareActionUrl($type)
-    {
-        $grid = $this->getDataGrid();
-        $route = $this->getRouteMatch();
-        $view = $this->getViewRenderer();
-
-        $action = preg_replace('/([a-z]+)+([A-Z])/', '$1-$2', $grid->getId());
-        $action = strtolower($action);
-        $action = $view->url($route->getMatchedRouteName(), [
-            //'controller' => $grid->getId(),
-            'controller' => $route->getParam('controller'),
-            'action' => 'edit-' . $action,
-        ]);
-    }*/
     /**
      * @return Datagrid
      */
