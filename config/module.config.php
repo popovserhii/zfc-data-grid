@@ -20,7 +20,7 @@ return [
         ],
         'delegators' => [
             Service\Progress\DataGridContext::class => [
-                \Stagem\Translator\Service\Factory\TranslatorDelegatorFactory::class
+                \Stagem\ZfcTranslator\Service\Factory\TranslatorDelegatorFactory::class
             ]
         ],
         'abstract_factories' => [

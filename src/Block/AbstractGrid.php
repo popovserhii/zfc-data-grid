@@ -66,6 +66,21 @@ abstract class AbstractGrid /*implements InitializableInterface*/
         $this->currentHelper = $currentHelper;
         $this->viewRenderer = $currentHelper->currentRenderer();
         $this->initToolbarCallback();
+
+        $this->actions = [
+            'create' => [
+                'admin/default' => [ // route name
+                    'resource' => $currentHelper->currentResource(), // route params
+                    'action' => 'create',
+                ],
+            ],
+            'back' => [
+                'admin/default' => [ // route name
+                    'resource' => $currentHelper->currentResource(), // route params
+                    'action' => 'back',
+                ],
+            ],
+        ];
     }
 
     public function init()
@@ -99,19 +114,14 @@ abstract class AbstractGrid /*implements InitializableInterface*/
             }
 
 			$toolbar = $this->getToolbar();
-			$current = $this->getCurrentHelper();
+			//$current = $this->getCurrentHelper();
 
             $toolbar->addButtonsWrapperClass('pull-right');
             // add button "Create" if relative label set
             !$this->getCreateButtonTitle() || $toolbar->addButton('create', [
                 'label' => '+',
                 'title' => $this->getCreateButtonTitle(),
-                'href' => [
-                    'admin/default' => [ // route name
-                        'resource' => $current->currentResource(), // route params
-                        'action' => 'create',
-                    ]
-                ],
+                'href' => $this->actions['create'],
                 'class' => 'btn btn-success btn-sm',
             ]);
 
@@ -119,12 +129,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
             !$this->getBackButtonTitle() || $toolbar->addButton('back', [
                 'label' => $this->getBackButtonTitle(),
                 'title' => $this->getBackButtonTitle(),
-                'href' => [
-                    'admin/default' => [ // route name
-                        'resource' => $current->currentResource(), // route params
-                        'action' => 'back',
-                    ]
-                ],
+                'href' => $this->actions['back'],
                 'class' => 'btn btn-default btn-sm',
             ]);
             $this->initToolbar();
