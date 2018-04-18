@@ -8,14 +8,14 @@
 
 		<!-- Anything else (filter, ...) -->
 		<?php $actionPanels = $toolbar->getActionPanels(); ?>
-        <div class="span6 col-md-2">
-            <?php if ($actionPanels) : ?>
-                <?php //Here your can add global dropdown actions like "Add".<br /> ?>
-                <?php foreach ($actionPanels as $actionPanel) : ?>
-                    <?= $this->block()->render($actionPanel) ?>
-                <?php endforeach; ?>
-            <?php endif; ?>
+        <?php if ($actionPanels) : ?>
+		<div class="span6 col-md-2">
+            <?php //Here your can add global dropdown actions like "Add".<br /> ?>
+            <?php foreach ($actionPanels as $actionPanel) : ?>
+                <?= $this->block()->render($actionPanel) ?>
+            <?php endforeach; ?>
         </div>
+        <?php endif; ?>
 
 
 		<!-- Export buttons -->
