@@ -13,6 +13,7 @@ namespace Popov\ZfcDataGrid\Block\Factory;
 use DoctrineModule\Persistence\ObjectManagerAwareInterface;
 use Doctrine\ORM\EntityManager;
 use Interop\Container\ContainerInterface;
+use Popov\ZfcCore\Helper\UrlHelper;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\Stdlib\InitializableInterface;
 use Zend\ServiceManager\Exception;
@@ -33,7 +34,7 @@ class GridFactory implements AbstractFactoryInterface {
         return $this->canCreateServiceWithName($container, $requestedName);
     }
 
-	public function canCreateServiceWithName(ContainerInterface $sm, $requestedName, array $options = null) {
+	public function canCreateServiceWithName($container, $requestedName, array $options = null) {
 		return (substr($requestedName, -4) === 'Grid');
 	}
 
@@ -42,19 +43,19 @@ class GridFactory implements AbstractFactoryInterface {
         return $this->createServiceWithName($container, $requestedName, $options);
     }
 
-	public function createServiceWithName(ContainerInterface $container, $requestedName, array $options = null) {
+	public function createServiceWithName($container, $requestedName, array $options = null) {
 		$className = $this->getClassName($container, $requestedName);
 
         $translator = $container->get(TranslatorInterface::class);
 		$config = $container->get('config');
 		$om = $container->get(EntityManager::class);
 		//$cpm = $container->get('ControllerPluginManager');
-		$vhm = $container->get(HelperPluginManager::class);
+		//$vhm = $container->get(HelperPluginManager::class);
 		//$renderer = $container->get('ViewRenderer');
         /** @var BlockPluginManager $bpm */
 		$bpm = $container->get('BlockPluginManager');
-		/** @var \Zend\Expressive\ZendView\UrlHelper $urlPlugin */
-		$urlPlugin = $vhm->get('url');
+		/** @var UrlHelper $urlHelper */
+		$urlHelper = $container->get(UrlHelper::class);
 		/** @var CurrentHelper $currentHelper */
 		$currentHelper = $container->get(CurrentHelper::class);
         $simplerHelper = $container->get(SimplerHelper::class);
@@ -89,7 +90,7 @@ class GridFactory implements AbstractFactoryInterface {
 		$grid->setToolbarTemplate('grid/toolbar');
 		$grid->setDefaultItemsPerPage(25);
 		//$grid->setUrl($urlPlugin->fromRoute($route->getMatchedRouteName(), $url));
-        $grid->setUrl($urlPlugin(
+        $grid->setUrl($urlHelper->generate(
             $currentHelper->currentRouteName(),
             $currentHelper->currentRouteParams()
         ));
