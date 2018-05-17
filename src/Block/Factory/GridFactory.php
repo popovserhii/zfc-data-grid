@@ -100,7 +100,7 @@ class GridFactory implements AbstractFactoryInterface {
             //'route' => 'default/wildcard',
             'route' => 'admin/default',
             'params' => [
-                'resource' => 'data-grid',
+                'controller' => 'data-grid',
                 'action' => 'modify',
             ]
         ];

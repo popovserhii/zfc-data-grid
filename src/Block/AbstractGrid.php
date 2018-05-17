@@ -46,7 +46,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
         /*'view' => [
             'route' => 'default',
             'params' => [
-                'resource' => null,
+                'controller' => null,
                 'action' => 'view',
             ],
             'options'
@@ -54,7 +54,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
         'edit' => [
             'route' => 'default/id',
             'params' => [
-                'resource' => null,
+                'controller' => null,
                 'action' => 'edit',
             ],
         ],*/
@@ -70,13 +70,13 @@ abstract class AbstractGrid /*implements InitializableInterface*/
         $this->actions = [
             'create' => [
                 'admin/default' => [ // route name
-                    'resource' => $currentHelper->currentResource(), // route params
+                    'controller' => $currentHelper->currentController(), // route params
                     'action' => 'create',
                 ],
             ],
             'back' => [
                 'admin/default' => [ // route name
-                    'resource' => $currentHelper->currentResource(), // route params
+                    'controller' => $currentHelper->currentController(), // route params
                     'action' => 'back',
                 ],
             ],
