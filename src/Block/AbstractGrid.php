@@ -30,7 +30,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
     protected $currentHelper;
 
     /** @return PhpRenderer */
-    protected $viewRenderer;
+    protected $renderer;
 
     /** @var Toolbar */
     protected $toolbar;
@@ -41,6 +41,13 @@ abstract class AbstractGrid /*implements InitializableInterface*/
     protected $createButtonTitle = 'Create';
 
     protected $backButtonTitle = 'Back';
+
+    /**
+     * Grid mnemo accord to entity mnemo
+     *
+     * @var string
+     */
+    protected $mnemo = '';
 
     protected $actions = [
         /*'view' => [
@@ -64,7 +71,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
     {
         $this->dataGrid = $dataGrid;
         $this->currentHelper = $currentHelper;
-        $this->viewRenderer = $currentHelper->currentRenderer();
+        $this->renderer = $currentHelper->currentRenderer();
         $this->initToolbarCallback();
 
         $this->actions = [
@@ -147,7 +154,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
     {
         $grid = $this->getDataGrid();
         //$route = $this->getRouteMatch();
-        $view = $this->getViewRenderer();
+        $view = $this->getRenderer();
 
         foreach ($this->actions as $actionName => $action) {
             //$action = preg_replace('/([a-z]+)+([A-Z])/', '$1-$2', $grid->getId());
@@ -175,6 +182,13 @@ abstract class AbstractGrid /*implements InitializableInterface*/
         //return $actions;
     }
 
+    public function setDataGrid($dataGrid)
+    {
+        $this->dataGrid = $dataGrid;
+
+        return $this;
+    }
+
     /**
      * @return Datagrid
      */
@@ -186,9 +200,9 @@ abstract class AbstractGrid /*implements InitializableInterface*/
     /**
      * @return PhpRenderer
      */
-    public function getViewRenderer()
+    public function getRenderer()
     {
-        return $this->viewRenderer;
+        return $this->renderer;
     }
 
     public function getResponse()
@@ -196,13 +210,15 @@ abstract class AbstractGrid /*implements InitializableInterface*/
         return $this->getDataGrid()->getResponse();
     }
 
+    public function setCurrentHelper(CurrentHelper $currentHelper)
+    {
+        $this->currentHelper = $currentHelper;
+
+        return $this;
+    }
+
     public function getCurrentHelper()
     {
-        /*static $routeMatch;
-        if (!$routeMatch) {
-            $routeMatch = $this->getServiceLocator()->get('Application')->getMvcEvent()->getRouteMatch();
-        }*/
-
         return $this->currentHelper;
     }
 
