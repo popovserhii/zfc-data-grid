@@ -72,6 +72,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
         $this->dataGrid = $dataGrid;
         $this->currentHelper = $currentHelper;
         $this->renderer = $currentHelper->currentRenderer();
+        $dataGrid->setId($this->mnemo);
         $this->initToolbarCallback();
 
         $this->actions = [
