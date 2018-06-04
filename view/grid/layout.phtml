@@ -219,9 +219,11 @@ $(document).ready(function () {
         responsive : true,
         styleUI : "Bootstrap", // http://www.trirand.com/blog/?p=1484
 
-        width: 'auto',
+        //width: 'auto',
         //height: '600px',
-        height: 'auto',
+        //height: 'auto',
+        height: '<?= $this->width ?? 'auto' ?>',
+        scrollerbar:true,
         /*height: function() {
          var wHeight = $(window).height();
          var hHeight = $('.header').height();
