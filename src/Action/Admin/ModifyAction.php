@@ -9,40 +9,56 @@
  */
 namespace Popov\ZfcDataGrid\Action\Admin;
 
-use Popov\ZfcEntity\Helper\EntityHelper;
+use Popov\ZfcDataGrid\GridHelper;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+#use Psr\Http\Server\MiddlewareInterface;
+#use Psr\Http\Server\RequestHandlerInterface;
+use Interop\Http\ServerMiddleware\MiddlewareInterface;
+use Interop\Http\Server\RequestHandlerInterface;
+use Fig\Http\Message\RequestMethodInterface;
 use Zend\Diactoros\Response\JsonResponse;
+use Zend\EventManager\EventManagerAwareInterface;
+use Zend\EventManager\EventManagerAwareTrait;
 use Zend\Stdlib\Exception;
 use Zend\View\Model\ViewModel;
 use Zend\View\Model\JsonModel;
 use Popov\ZfcCore\Service\DomainServiceInterface;
 use Popov\ZfcEntity\Model\Entity;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Fig\Http\Message\RequestMethodInterface;
-
-class ModifyAction implements MiddlewareInterface, RequestMethodInterface
+use Popov\ZfcEntity\Helper\EntityHelper;
+use Doctrine\Common\Collections\ArrayCollection;
+/**
+ * @method EntityHelper entity()
+ */
+class ModifyAction implements MiddlewareInterface, RequestMethodInterface, EventManagerAwareInterface
 {
+    use EventManagerAwareTrait;
+
     /**
      * @var DomainServiceInterface
      */
-    protected $domainService;
+    //protected $domainService;
 
     /**
      * @var EntityHelper
      */
     protected $entityHelper;
 
-    public function __construct(/*DomainServiceInterface*/ $entityService, EntityHelper $entityHelper)
+    /**
+     * @var GridHelper
+     */
+    protected $gridHelper;
+
+    public function __construct(GridHelper $gridHelper, EntityHelper $entityHelper)
     {
-        $this->domainService = $entityService;
+        //$this->domainService = $entityService;
+        $this->gridHelper = $gridHelper;
         $this->entityHelper = $entityHelper;
     }
 
-    public function getDomainService()
+    public function getGridHelper()
     {
-        return $this->domainService;
+        return $this->gridHelper;
     }
 
     public function getEntityHelper()
@@ -75,21 +91,47 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface
 
     public function editOperation($request)
     {
-        $domainService = $this->getDomainService();
-        $om = $domainService->getObjectManager();
-        $operation = $request->getAttribute('oper');
+        //$domainService = $this->getDomainService();
+        //$om = $domainService->getObjectManager();
+        $gridHelper = $this->getGridHelper();
+        $entityHelper = $this->getEntityHelper();
+        $om = $entityHelper->getObjectManager();
+        $operation = $request->getParsedBody()['oper'];
 
-        $gridData = $this->grid()->prepareExchangeData($request);
+        $gridData = $gridHelper->prepareExchangeData($request);
 
         $items = [];
         $entities = $om->getRepository(Entity::class)->findBy(['mnemo' => array_keys($gridData)]);
         foreach ($entities as $entity) {
             foreach ($gridData[$entity->getMnemo()] as $itemId => $entityData) {
-                $item = $this->entity()->find($itemId, $entity, EntityHelper::CREATE_EMPTY);
+                $item = $entityHelper->find($itemId, $entity, EntityHelper::CREATE_EMPTY);
                 $params = ['context' => $this, 'gridData' => $gridData, 'entity' => $entity];
-                #$this->getEventManager()->trigger($operation . '.on', $item, $params);
-                $items[] = $item->exchangeArray($entityData);
-                #$this->getEventManager()->trigger($operation, $item, $params);
+                $this->getEventManager()->trigger($operation . '.on', $item, $params);
+                //$items[] = $item->exchangeArray($entityData);
+
+                // @todo Hardcode. Implement Doctrine Hydrator
+                foreach ($entityData as $property => $value) {
+                    if (method_exists($item, $method = 'set' . ucfirst($property))) {
+                        $item->{$method}($value);
+                    } elseif (method_exists($item, $method = 'add' . ucfirst($property))) {
+                        $subEntity = $entityHelper->getBy($property, 'mnemo');
+                        //$item->{$method}()->clear(); // this don't work
+                        $removeMethod = 'remove' . ucfirst($property);
+                        if (!empty($value)) {
+                            $value = is_array($value) ? $value : [$value];
+
+                            foreach ($value as $subValue) {
+                                $item->{$removeMethod}($om->getReference($subEntity->getNamespace(), $subValue));
+                            }
+
+                            foreach ($value as $subValue) {
+                                $item->{$method}($om->getReference($subEntity->getNamespace(), $subValue));
+                            }
+                        }
+                    }
+                }
+
+                $this->getEventManager()->trigger($operation, $item, $params);
             }
         }
 

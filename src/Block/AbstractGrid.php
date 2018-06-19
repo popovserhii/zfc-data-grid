@@ -43,11 +43,11 @@ abstract class AbstractGrid /*implements InitializableInterface*/
     protected $backButtonTitle = 'Back';
 
     /**
-     * Grid mnemo accord to entity mnemo
+     * Grid id accord to entity mnemo
      *
      * @var string
      */
-    protected $mnemo = '';
+    protected $id = '';
 
     protected $actions = [
         /*'view' => [
@@ -72,7 +72,7 @@ abstract class AbstractGrid /*implements InitializableInterface*/
         $this->dataGrid = $dataGrid;
         $this->currentHelper = $currentHelper;
         $this->renderer = $currentHelper->currentRenderer();
-        $dataGrid->setId($this->mnemo);
+        $dataGrid->setId($this->id);
         $this->initToolbarCallback();
 
         $this->actions = [

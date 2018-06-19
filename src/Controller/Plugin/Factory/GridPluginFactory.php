@@ -3,7 +3,7 @@
  * Grid Plugin Factory
  *
  * @category Popov
- * @package Popov_Grid
+ * @package Popov_ZfcGrid
  * @author Serhii Popov <popow.serhii@gmail.com>
  * @datetime: 26.11.2016 09:30
  */
@@ -12,30 +12,15 @@ namespace Popov\ZfcDataGrid\Controller\Plugin\Factory;
 
 use Interop\Container\ContainerInterface;
 use Popov\ZfcDataGrid\Controller\Plugin\GridPlugin;
+use Popov\ZfcDataGrid\GridHelper;
 
 class GridPluginFactory {
 
     public function __invoke(ContainerInterface $container)
     {
-		$sm = $container->getServiceLocator();
+		$gridHelper = $container->get(GridHelper::class);
 
-		//$om = $sm->get('Doctrine\ORM\EntityManager');
-		//$cm = $sm->get('ControllerPluginManager');
-		$vhm = $sm->get('ViewHelperManager');
-
-		$config = $sm->get('Config');
-		$current = $container->get('current');
-		$formElement = $vhm->get('formElement');
-
-		$changer = $sm->get('StatusChanger');
-		$moduleService = $sm->get('EntityService');
-
-		return (new GridPlugin(/*$changer*/))
-			//->injectConfig($config)
-			//->injectCurrent($current)
-			//->injectModuleService($moduleService)
-			//->injectFormElementHelper($formElement)
-		;
+		return (new GridPlugin($gridHelper));
 	}
 
 }

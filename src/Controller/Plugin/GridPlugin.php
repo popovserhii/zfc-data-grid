@@ -1,7 +1,6 @@
 <?php
 /**
  * Plugin which add form element to grid.
- *
  * This allow add status buttons to different fieldsets in form
  *
  * @category Popov
@@ -12,143 +11,25 @@
 
 namespace Popov\ZfcDataGrid\Controller\Plugin;
 
-use Zend\Filter\Word\CamelCaseToDash;
-use Zend\Stdlib\Exception;
+use Popov\ZfcDataGrid\GridHelper;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\Mvc\Controller\Plugin\Url;
-use Zend\Http\PhpEnvironment\Request;
-use Zend\Form\Form;
-use Zend\Form\Fieldset;
 
-use Magere\ZfcEntity\Service\EntityService as ModuleService;
-use Magere\Status\Service\StatusChanger;
-use Magere\Status\Form\ButtonFieldset;
-
-use Popov\Current\Plugin\Current;
-
-class GridPlugin extends AbstractPlugin {
-
-	/** @var Url */
-	protected $config;
-
-	/** @var Current */
-	protected $current;
-
-	/** @var StatusChanger */
-	protected $statusChanger;
-
-	/** @var ModuleService */
-	protected $moduleService;
-
-	protected $formElementHelper;
-
-    protected $route;
-
-	/**
-	 * Temporary fields data of which should display on form
-	 * and then save to other object with related name
-	 *
-	 * Explain:
-	 * 	key - form field to which will be bind value
-	 *	value - intermediate field which will be transfer to 'key'
-	 *
-	 * @var array
-	 */
-	protected $related = [
-		//'productCity_quantity' => 'invoiceProduct_quantity'
-	];
-
-	public function __construct(/*StatusChanger $statusChanger*/) {
-		/*$this->statusChanger = $statusChanger;*/
-	}
-
-	public function injectConfig($config) {
-		$this->config = $config;
-
-		return $this;
-	}
-
-	public function getConfig() {
-		return $this->config;
-	}
-
-	public function injectCurrent($current) {
-		$this->current = $current;
-
-		return $this;
-	}
-
-	public function getCurrent() {
-		return $this->current;
-	}
-
-	public function getStatusChanger() {
-		return $this->statusChanger;
-	}
-
-	public function injectModuleService($moduleService) {
-		$this->moduleService = $moduleService;
-
-		return $this;
-	}
-
-	public function getModuleService() {
-		return $this->moduleService;
-	}
-
-	public function injectFormElementHelper($formElementHelper) {
-		$this->formElementHelper = $formElementHelper;
-
-		return $this;
-	}
-
-	public function getFormElementHelper() {
-		return $this->formElementHelper;
-	}
-
-	public function getRoute()
-    {
-        if (!$this->route) {
-            $this->route = $this->getController()->getEvent()->getRouteMatch();
-        }
-
-        return $this->route;
-    }
-
+class GridPlugin extends AbstractPlugin
+{
     /**
-     * @param Request $request
-     * @return array
+     * @var GridHelper
      */
-	public function prepareExchangeData($request)
+    protected $gridHelper;
+
+    public function __construct(GridHelper $gridHelper)
     {
-        $route = $this->getRoute();
-        $gridData = [];
-        foreach ($request->getPost() as $name => $value) {
-            if (in_array($name, ['id', 'oper']) || (substr($name, -3, 3) === '_id')) { // skip specialized keywords
-                continue;
-            }
-
-            $filter = new CamelCaseToDash();
-            list($moduleMnemo, $field) = explode('_', $name);
-            $moduleMnemoAlias = strtolower($filter->filter($moduleMnemo));
-            $gridMnemo = $route->getParam('grid');
-            if ($request->getPost()->offsetExists($moduleMnemo . '_id')) {
-                $gridData[$moduleMnemoAlias][$request->getPost($moduleMnemo . '_id')][$field] = $value;
-            } elseif ($gridMnemo === $moduleMnemo) {
-                $itemId = $request->getPost('id');
-                $gridData[$moduleMnemoAlias][$itemId][$field] = $value;
-            }
-        }
-
-        return $gridData;
+        $this->gridHelper = $gridHelper;
     }
 
-	/*public function __invoke() {
-		if (!$args = func_get_args()) {
-			return $this;
-		}
+    public function __invoke()
+    {
+        $params = func_get_args();
 
-		return call_user_func([$this, 'apply'], func_get_args());
-	}*/
-
+        return call_user_func_array($this->gridHelper, $params);
+    }
 }

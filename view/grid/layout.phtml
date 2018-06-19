@@ -210,7 +210,7 @@ $(document).ready(function () {
         <?php if (isset($this->editUrl)) : ?>
         <?php //\Zend\Debug\Debug::dump(key($this->editRoute)); die(__METHOD__); ?>
         <?php $params = $this->editUrl['params']; ?>
-        <?php $params['id'] = $this->gridId; ?>
+        <?php //$params['id'] = $this->gridId; ?>
         editurl: '<?echo $this->url($this->editUrl['route'], $params) ?>',
         <?php endif; ?>
 

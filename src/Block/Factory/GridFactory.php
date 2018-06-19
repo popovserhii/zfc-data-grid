@@ -85,11 +85,13 @@ class GridFactory implements AbstractFactoryInterface {
         //\Zend\Debug\Debug::dump($urlPlugin->fromRoute($route->getMatchedRouteName(), $params)); //die(__METHOD__);
 
 		$grid = clone $container->get('ZfcDatagrid\Datagrid');
+		$gridBlock = new $className($grid, $currentHelper);
+
         $grid->setRendererName('jqGrid');
-		$grid->setTranslator($translator);
-		$grid->setToolbarTemplate('grid/toolbar');
-		$grid->setDefaultItemsPerPage(25);
-		//$grid->setUrl($urlPlugin->fromRoute($route->getMatchedRouteName(), $url));
+        $grid->setTranslator($translator);
+        $grid->setToolbarTemplate('grid/toolbar');
+        $grid->setDefaultItemsPerPage(25);
+        //$grid->setUrl($urlPlugin->fromRoute($route->getMatchedRouteName(), $url));
         $grid->setUrl($urlHelper->generate(
             $currentHelper->currentRouteName(),
             $currentHelper->currentRouteParams()
@@ -97,11 +99,12 @@ class GridFactory implements AbstractFactoryInterface {
 
         $rendererOptions = $grid->getToolbarTemplateVariables();
         $rendererOptions['editUrl'] = [
-            //'route' => 'default/wildcard',
-            'route' => 'admin/default',
+            'route' => 'admin/default/wildcard',
+            //'route' => 'admin/default',
             'params' => [
                 'controller' => 'data-grid',
                 'action' => 'modify',
+                'grid' => $grid->getId(),
             ]
         ];
         //$rendererOptions['navGridDel'] = true;
@@ -114,16 +117,11 @@ class GridFactory implements AbstractFactoryInterface {
         //\Zend\Debug\Debug::dump([$className, $rendererOptions['editUrl']]); die(__METHOD__);
 
 
-
-        //$jqGridColumns = $vhm->get('jqgridColumns');
-
-		$gridBlock = new $className($grid, $currentHelper);
-
-		/*if (isset($config['grid_block_config']['template_map']['grid/list'])
-			&& $config['grid_block_config']['template_map']['grid/list']
-		) {
-			$grid->setTemplate($config['grid_block_config']['template_map']['grid/list']);
-		}*/
+        /*if (isset($config['grid_block_config']['template_map']['grid/list'])
+            && $config['grid_block_config']['template_map']['grid/list']
+        ) {
+            $grid->setTemplate($config['grid_block_config']['template_map']['grid/list']);
+        }*/
 
         $cpm = $container->get('DataGridPluginManager');
 

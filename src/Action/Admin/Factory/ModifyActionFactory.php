@@ -7,18 +7,19 @@
  */
 namespace Popov\ZfcDataGrid\Action\Admin\Factory;
 
-use Popov\ZfcCurrent\CurrentHelper;
-use Popov\ZfcDataGrid\Action\Admin\ModifyAction;
-use Popov\ZfcDataGrid\Controller\DataGridController;
-use Popov\ZfcEntity\Helper\EntityHelper;
-use Psr\Container\ContainerInterface;
+use Doctrine\ORM\EntityManager;
+use Popov\ZfcDataGrid\GridHelper;
 use Zend\Stdlib\Exception;
+use Psr\Container\ContainerInterface;
+use Popov\ZfcCurrent\CurrentHelper;
+use Popov\ZfcEntity\Helper\EntityHelper;
+use Popov\ZfcDataGrid\Hydrator\DoctrineObject;
+use Popov\ZfcDataGrid\Action\Admin\ModifyAction;
 
 class ModifyActionFactory
 {
     public function __invoke(ContainerInterface $container)
     {
-        $entityHelper = $container->get(EntityHelper::class);
         $currentHelper = $container->get(CurrentHelper::class);
 
         #$router = $container->get('Router');
@@ -29,15 +30,23 @@ class ModifyActionFactory
         //$this->slug = $route->getParam("slug");
 
         $params = $currentHelper->currentRouteParams();
-        if (!($gridId = $params['id'])) {
+        //if (!($gridId = $params['id'])) {
+        if (!($gridId = $params['grid'])) {
             throw new Exception\InvalidArgumentException(
                 'Route key "grid" must be set for correct work edit functionality'
             );
         }
 
-        $domainService = $container->get(ucfirst($gridId) . 'Service');
+        $girdHelper = $container->get(GridHelper::class);
+        $entityHelper = $container->get(EntityHelper::class);
 
-        $action = new ModifyAction($domainService, $entityHelper);
+        //$om = $container->get(EntityManager::class);
+        //$hydrator = new DoctrineObject($om);
+        
+        //$domainService = $container->get(ucfirst($gridId) . 'Service');
+
+        //$action = new ModifyAction($domainService, $entityHelper);
+        $action = new ModifyAction($girdHelper, $entityHelper);
         //$controller->setServiceManager($sm);
 
         return $action;

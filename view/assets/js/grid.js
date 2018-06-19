@@ -83,16 +83,22 @@ PopovGrid = {
 				restoreAfterError: false
 			};
 
-			//grid.jqGrid('editRow', id, editParameters);
-
 			// @link http://stackoverflow.com/a/2157888/1335142
 			//grid.jqGrid('editRow', id, editParameters, '', '', '', '', aftersavefunc, errorfunc, afterrestorefunc);
-			grid.editRow(id, editParameters);
+      //grid.editRow(id, editParameters);
+      // onClickEdit is disabled such as can be many cases when this is not fit.
+      // Maybe good solution will be to use fixed grid height, this allow to user see all grid elements on one screen
+      // without scrolling.
+      // grid.jqGrid('editRow', id, editParameters);
 
 			self.body.data('jqGrid.lastSelection', id);
 		//}
 	},
 
+  /**
+   * @todo Change default behavior "message is ignored if success is true"
+   * @see https://stackoverflow.com/a/12650563/1335142
+   */
 	editSuccessful: function (data, stat) {
 		var response = data.responseJSON;
 		if (response.hasOwnProperty('error')) {

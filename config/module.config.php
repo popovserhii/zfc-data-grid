@@ -28,6 +28,11 @@ return [
         ],
     ],
 
+    // middleware
+    'actions' => [
+        'data-grid' => __NAMESPACE__ . '\Action'
+    ],
+    
     // mvc
     'controllers' => [
         'aliases' => [
