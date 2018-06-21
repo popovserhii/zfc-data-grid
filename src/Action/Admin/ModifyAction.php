@@ -96,7 +96,8 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface, Event
         $gridHelper = $this->getGridHelper();
         $entityHelper = $this->getEntityHelper();
         $om = $entityHelper->getObjectManager();
-        $operation = $request->getParsedBody()['oper'];
+        $params = $request->getParsedBody();
+        $operation = $params['oper'];
 
         $gridData = $gridHelper->prepareExchangeData($request);
 
@@ -105,7 +106,7 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface, Event
         foreach ($entities as $entity) {
             foreach ($gridData[$entity->getMnemo()] as $itemId => $entityData) {
                 $item = $entityHelper->find($itemId, $entity, EntityHelper::CREATE_EMPTY);
-                $params = ['context' => $this, 'gridData' => $gridData, 'entity' => $entity];
+                $params = ['context' => $this, 'gridData' => $params, 'entity' => $entity];
                 $this->getEventManager()->trigger($operation . '.on', $item, $params);
                 //$items[] = $item->exchangeArray($entityData);
 
@@ -114,18 +115,19 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface, Event
                     if (method_exists($item, $method = 'set' . ucfirst($property))) {
                         $item->{$method}($value);
                     } elseif (method_exists($item, $method = 'add' . ucfirst($property))) {
+                        $getMethod = 'get' . ucfirst($property) . 's';
                         $subEntity = $entityHelper->getBy($property, 'mnemo');
-                        //$item->{$method}()->clear(); // this don't work
-                        $removeMethod = 'remove' . ucfirst($property);
+                        $item->{$getMethod}()->clear(); // this don't work
+                        //$removeMethod = 'remove' . ucfirst($property);
                         if (!empty($value)) {
                             $value = is_array($value) ? $value : [$value];
 
-                            foreach ($value as $subValue) {
-                                $item->{$removeMethod}($om->getReference($subEntity->getNamespace(), $subValue));
-                            }
+                            /*foreach ($item->g as $subValue) {
+                                $item->{$removeMethod}($om->find($subEntity->getNamespace(), $subValue));
+                            }*/
 
                             foreach ($value as $subValue) {
-                                $item->{$method}($om->getReference($subEntity->getNamespace(), $subValue));
+                                $item->{$method}($om->find($subEntity->getNamespace(), $subValue));
                             }
                         }
                     }
@@ -136,7 +138,7 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface, Event
         }
 
         $om->flush();
-        #$this->getEventManager()->trigger($operation . '.post', $items, ['context' => $this]);
+        $this->getEventManager()->trigger($operation . '.post', $items, ['context' => $this]);
 
         return [
             'message' => sprintf('Items successfully have been %sed', $operation),
@@ -155,10 +157,10 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface, Event
         $items = $domainService->getRepository()->findBy(['id' => explode(',', $params['id'])]);
 
         foreach ($items as $item) {
-            #$params = ['context' => $this];
-            #$this->getEventManager()->trigger('delete.on', $item, $params);
+            $params = ['context' => $this];
+            $this->getEventManager()->trigger('delete.on', $item, $params);
             $om->remove($item);
-            #$this->getEventManager()->trigger('delete', $item, $params);
+            $this->getEventManager()->trigger('delete', $item, $params);
         }
         $om->flush();
 
