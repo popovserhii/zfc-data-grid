@@ -130,6 +130,7 @@ class GridFactory implements AbstractFactoryInterface {
 		//$gridBlock->setToolbar($bpm->get('block/admin/toolbar'));
         $gridBlock->setToolbar($bpm->get('AdminToolbar'));
 
+        // We must create new ColumnFactory for each grid
         $gridBlock->setColumnFactory(new ColumnFactory($cpm, $simplerHelper, $config));
 		if ($gridBlock instanceof ObjectManagerAwareInterface) {
 			$gridBlock->setObjectManager($om);

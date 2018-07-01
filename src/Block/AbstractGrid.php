@@ -9,19 +9,16 @@
  */
 namespace Popov\ZfcDataGrid\Block;
 
-//use Zend\Stdlib\InitializableInterface;
 use Popov\ZfcCurrent\CurrentHelper;
 use Zend\View\Renderer\PhpRenderer;
 use ZfcDatagrid\Datagrid;
 use ZfcDatagrid\Column;
 use ZfcDatagrid\Column\Style;
 use ZfcDatagrid\Column\Type;
-
 use Popov\ZfcDataGridPlugin\Column\Factory\ColumnFactory;
-//use Popov\ZfcDataGrid\View\Helper\Columns as ColumnsHelper;
 use Popov\ZfcBlock\Block\Admin\Toolbar;
 
-abstract class AbstractGrid /*implements InitializableInterface*/
+abstract class AbstractGrid
 {
     /** @var Datagrid */
     protected $dataGrid;
