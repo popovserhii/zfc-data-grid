@@ -162,7 +162,7 @@ abstract class AbstractGrid
             $identity = isset($action['options']['identity']) ? $action['options']['identity'] : $grid->getId() . '_id';
 
             $bg = new Style\BackgroundColor([224, 226, 229]);
-            $fmtr = new Column\Formatter\Link();
+            $fmtr = new Column\Formatter\ExternalLink();
             $fmtr->setAttribute('class', $action['attributes']['class']);
 
             $fmtr->setLink($link . '/' . $fmtr->getColumnValuePlaceholder($grid->getColumnByUniqueId($identity)));

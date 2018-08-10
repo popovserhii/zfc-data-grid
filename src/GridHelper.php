@@ -33,6 +33,14 @@ class GridHelper
         return $this->currentHelper;
     }
 
+    public function getCurrentGridId()
+    {
+        $routeParams = $this->currentHelper->currentRouteParams();
+        $gridMnemo = $routeParams['grid'] ?? null;
+
+        return $gridMnemo;
+    }
+
     /**
      * @param Request $request
      * @return array
@@ -41,8 +49,8 @@ class GridHelper
     {
         //$route = $this->getRoute();
         //$params = $request->getPost();
-        $routeParams = $this->currentHelper->currentRouteParams();
-        $gridMnemo = $routeParams['grid'] ?? null;
+        //$routeParams = $this->currentHelper->currentRouteParams();
+        $gridMnemo = $this->getCurrentGridId();
         $params = $request->getParsedBody();
         $filter = new CamelCaseToDash();
         $gridData = [];

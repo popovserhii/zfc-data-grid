@@ -91,8 +91,6 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface, Event
 
     public function editOperation($request)
     {
-        //$domainService = $this->getDomainService();
-        //$om = $domainService->getObjectManager();
         $gridHelper = $this->getGridHelper();
         $entityHelper = $this->getEntityHelper();
         $om = $entityHelper->getObjectManager();
@@ -147,15 +145,14 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface, Event
 
     public function delOperation($request)
     {
-        #$request = $this->getRequest();
-        //$route = $this->getEvent()->getRouteMatch();
-
+        $gridHelper = $this->getGridHelper();
+        $entityHelper = $this->getEntityHelper();
+        $om = $entityHelper->getObjectManager();
         $params = $request->getParsedBody();
-        $domainService = $this->getDomainService();
 
-        $om = $domainService->getObjectManager();
-        $items = $domainService->getRepository()->findBy(['id' => explode(',', $params['id'])]);
-
+        /** @var Entity $entity */
+        $entity = $om->getRepository(Entity::class)->findOneBy(['mnemo' => $gridHelper->getCurrentGridId()]);
+        $items = $om->getRepository($entity->getNamespace())->findBy(['id' => explode(',', $params['id'])]);
         foreach ($items as $item) {
             $params = ['context' => $this];
             $this->getEventManager()->trigger('delete.on', $item, $params);
