@@ -11,6 +11,8 @@ namespace Popov\ZfcDataGrid\View\Helper;
 
 use ZfcDatagrid\Renderer\JqGrid\View\Helper\Columns as ZfcDatagridColumns;
 
+use ZfcDatagrid\Filter;
+use ZfcDatagrid\Column;
 use ZfcDatagrid\Column\Type;
 
 class Columns extends ZfcDatagridColumns {
@@ -24,8 +26,8 @@ class Columns extends ZfcDatagridColumns {
         $translateMethod = $class->getMethod('translate');
         $translateMethod->setAccessible(true);
 
-        $getFormatterMethod = $class->getMethod('getFormatter');
-        $getFormatterMethod->setAccessible(true);
+        //$getFormatterMethod = $class->getMethod('getFormatter');
+        //$getFormatterMethod->setAccessible(true);
 
 		foreach ($columns as $column) {
 			/* @var $column \ZfcDatagrid\Column\AbstractColumn */
@@ -45,13 +47,25 @@ class Columns extends ZfcDatagridColumns {
 			/*
 			 * Formatting
 			 */
-			//$formatter = $this->getFormatter($column);
-			$formatter = $getFormatterMethod->invokeArgs($this, [$column]);
+			$formatter = $this->getFormatter($column);
+			//$formatter = $getFormatterMethod->invokeArgs($this, [$column]);
 			if ($formatter != '') {
 				$options['formatter'] = (string) $formatter;
 			}
 
-			if ($column->getType() instanceof Type\Number) {
+            $alignAlreadyDefined = false;
+            if ($column->hasStyles()) {
+                foreach ($column->getStyles() as $style) {
+                    /** @var Column\Style\Align $style */
+                    if (get_class($style) == Column\Style\Align::class) {
+                        $options['align'] = $style->getAlignment();
+                        $alignAlreadyDefined = true;
+                        break;
+                    }
+                }
+            }
+
+			if (!$alignAlreadyDefined && $column->getType() instanceof Type\Number) {
 				$options['align'] = (string) 'right';
 			}
 
@@ -116,7 +130,6 @@ class Columns extends ZfcDatagridColumns {
 
 		return '[' . implode(',', $return) . ']';
 	}
-
 	public function buildColModel($options) {
 		/**
 		 * Because with json_encode we get problems, it's custom made!
@@ -166,16 +179,153 @@ class Columns extends ZfcDatagridColumns {
 		return $value;
 	}
 
-	/*public function setCustomColumnModelOption($col, array $options) {
-		$this->columnModelOptions[$col->getUniqueId()] = $options;
-	}
+    /**
+     * @param Column\AbstractColumn $column
+     *
+     * @return string
+     */
+    protected function getFormatter(Column\AbstractColumn $column)
+    {
+        /*
+         * User defined formatter
+         */
+        $rendererParameters = $column->getRendererParameters('jqGrid');
+        if (isset($rendererParameters['formatter'])) {
+            return $rendererParameters['formatter'];
+        }
 
-	public function getCustomColumnModelOption($col) {
-		if (isset($this->columnModelOptions[$col->getUniqueId()])) {
-			return $this->columnModelOptions[$col->getUniqueId()];
-		}
+        /*
+         * Formatter based on column options + styles
+         */
+        $formatter = '';
 
-		return false;
-	}*/
+        $formatter .= implode(' ', $this->getStyles($column));
+
+        switch (get_class($column->getType())) {
+            case Type\PhpArray::class:
+                $formatter .= 'cellvalue = \'<pre>\' + cellvalue.join(\'<br />\') + \'</pre>\';';
+                break;
+        }
+
+        if ($column instanceof Column\Action) {
+            $formatter .= ' cellvalue = cellvalue; ';
+        }
+
+        if ($formatter != '') {
+            $prefix = 'function (cellvalue, options, rowObject) {';
+            $suffix = ' return cellvalue; }';
+
+            $formatter = $prefix . $formatter . $suffix;
+        }
+
+        return $formatter;
+    }
+
+    /**
+     * @param Column\AbstractColumn $col
+     *
+     * @throws \Exception
+     *
+     * @return array
+     */
+    protected function getStyles(Column\AbstractColumn $col)
+    {
+        $styleFormatter = [];
+
+        /*
+         * First all based on value (only one works) @todo
+         */
+        foreach ($col->getStyles() as $style) {
+            $prepend = '';
+            $append = '';
+
+            /* @var $style Column\Style\AbstractStyle */
+            foreach ($style->getByValues() as $rule) {
+                $colString = $rule['column']->getUniqueId();
+                switch ($rule['operator']) {
+                    case Filter::EQUAL:
+                        $operator = '==';
+                        break;
+
+                    case Filter::NOT_EQUAL:
+                        $operator = '!=';
+                        break;
+
+                    case Filter::GREATER_EQUAL:
+                        $operator = '>=';
+                        break;
+
+                    case Filter::GREATER:
+                        $operator = '>';
+                        break;
+
+                    case Filter::LESS_EQUAL:
+                        $operator = '<=';
+                        break;
+
+                    case Filter::LESS:
+                        $operator = '<';
+                        break;
+
+                    default:
+                        throw new \Exception('Currently not supported filter operation: "'.$rule['operator'].'"');
+                }
+
+                $valueString = ($rule['value'] instanceof Column\AbstractColumn)
+                    ? 'rowObject.' . $rule['value']->getUniqueId()
+                    : "'" . $rule['value'] . "'";
+                    //: $rule['value'];
+                $prepend .= 'if (rowObject.' . $colString . ' ' . $operator . ' ' . $valueString . ') {';
+                $append .= '}';
+            }
+
+            $styleString = '';
+            switch (get_class($style)) {
+                case Column\Style\Bold::class:
+                    $styleString = self::STYLE_BOLD;
+                    break;
+
+                case Column\Style\Italic::class:
+                    $styleString = self::STYLE_ITALIC;
+                    break;
+
+                case Column\Style\Strikethrough::class:
+                    $styleString = self::STYLE_STRIKETHROUGH;
+                    break;
+
+                case Column\Style\Color::class:
+                    $styleString = sprintf(
+                        'cellvalue = \'<span style="color: #%s;">\' + cellvalue + \'</span>\';',
+                        $style->getRgbHexString()
+                    );
+                    break;
+
+                case Column\Style\CSSClass::class:
+                    $styleString = 'cellvalue = \'<span class="'.$style->getClass().'">\' + cellvalue + \'</span>\';';
+                    break;
+
+                case Column\Style\BackgroundColor::class:
+                    // do NOTHING! this is done by loadComplete event...
+                    // At this stage jqgrid haven't created the columns...
+                    break;
+
+                case Column\Style\Html::class:
+                    // do NOTHING! just pass the HTML!
+                    break;
+
+                case Column\Style\Align::class:
+                    // do NOTHING! we have to add the align style in the gridcell and not in a span!
+                    break;
+
+                default:
+                    throw new \Exception('Not defined style: "'.get_class($style).'"');
+                    break;
+            }
+
+            $styleFormatter[] = $prepend.$styleString.$append;
+        }
+
+        return $styleFormatter;
+    }
 
 }
