@@ -56,6 +56,7 @@ return [
                     'assets' => [
                         'js/jqGrid/formatter/grid.chain.js',
                         'js/jqGrid/formatter/grid.link.js',
+                        'js/jqGrid/formatter/grid.drop-down.js',
                     ],
                 ],
             ],
