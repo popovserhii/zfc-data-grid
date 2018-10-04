@@ -58,7 +58,7 @@ class GridFactory implements AbstractFactoryInterface {
 		$urlHelper = $container->get(UrlHelper::class);
 		/** @var CurrentHelper $currentHelper */
 		$currentHelper = $container->get(CurrentHelper::class);
-        $simplerHelper = $container->get(SimplerHelper::class);
+        //$simplerHelper = $container->get(SimplerHelper::class);
         // Important get route from current plugin for correct work of forward
 		//$route = $currentPlugin->currentRoute();
 		// Important get route from current controller for correct work of forward
@@ -131,7 +131,7 @@ class GridFactory implements AbstractFactoryInterface {
         $gridBlock->setToolbar($bpm->get('AdminToolbar'));
 
         // We must create new ColumnFactory for each grid
-        $gridBlock->setColumnFactory(new ColumnFactory($cpm, $simplerHelper, $config));
+        $gridBlock->setColumnFactory(new ColumnFactory($cpm, /*$simplerHelper,*/ $config));
 		if ($gridBlock instanceof ObjectManagerAwareInterface) {
 			$gridBlock->setObjectManager($om);
 		}
