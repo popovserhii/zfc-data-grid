@@ -105,6 +105,18 @@ abstract class AbstractGrid
         return $this;
     }
 
+    public function addButton($buttonConfig)
+    {
+        //$button = //...
+
+        $rendererOptions = $this->getDataGrid()->getToolbarTemplateVariables();
+        $rendererOptions['navGridEdit'] = true;
+
+        $rendererOptions['navButtons'][] = $button;
+
+        $this->getDataGrid()->setToolbarTemplateVariables($rendererOptions);
+    }
+
 	public function initToolbarCallback() {
         $grid = $this->getDataGrid();
         if (isset($grid->getToolbarTemplateVariables()['toolbar'])) {
