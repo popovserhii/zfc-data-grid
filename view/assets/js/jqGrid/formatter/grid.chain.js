@@ -12,7 +12,6 @@
 (function ($) {
   "use strict";
 
-  //$.fn.gridNavButton
   $.extend($.fn.fmatter, {
     chain: function (cellValue, options, rowData, action) {
       try {

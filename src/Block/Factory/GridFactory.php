@@ -14,6 +14,9 @@ use DoctrineModule\Persistence\ObjectManagerAwareInterface;
 use Doctrine\ORM\EntityManager;
 use Interop\Container\ContainerInterface;
 use Popov\ZfcCore\Helper\UrlHelper;
+use Popov\ZfcDataGrid\Service\UserSettingsService;
+use Popov\ZfcUser\Form\User;
+use Popov\ZfcUser\Helper\UserHelper;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\Stdlib\InitializableInterface;
 use Zend\ServiceManager\Exception;
@@ -58,6 +61,11 @@ class GridFactory implements AbstractFactoryInterface {
 		$urlHelper = $container->get(UrlHelper::class);
 		/** @var CurrentHelper $currentHelper */
 		$currentHelper = $container->get(CurrentHelper::class);
+
+		/** @var UserSettingsService $userSetting */
+        $userSetting = $container->get(UserSettingsService::class);
+
+
         //$simplerHelper = $container->get(SimplerHelper::class);
         // Important get route from current plugin for correct work of forward
 		//$route = $currentPlugin->currentRoute();
@@ -85,7 +93,7 @@ class GridFactory implements AbstractFactoryInterface {
         //\Zend\Debug\Debug::dump($urlPlugin->fromRoute($route->getMatchedRouteName(), $params)); //die(__METHOD__);
 
 		$grid = clone $container->get('ZfcDatagrid\Datagrid');
-		$gridBlock = new $className($grid, $currentHelper);
+		$gridBlock = new $className($grid, $currentHelper, $userSetting);
 
         $grid->setRendererName('jqGrid');
         $grid->setTranslator($translator);

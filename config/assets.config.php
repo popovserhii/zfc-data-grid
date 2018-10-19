@@ -18,6 +18,7 @@ return [
             '@grid_js',
             '@formatters_js',
             '@grid_formatters_js',
+            '@grid_buttons_js'
         ],
     ],
     'modules' => [
@@ -57,6 +58,12 @@ return [
                         'js/jqGrid/formatter/grid.chain.js',
                         'js/jqGrid/formatter/grid.link.js',
                         'js/jqGrid/formatter/grid.drop-down.js',
+                    ],
+                ],
+                'grid_buttons_js' => [
+                    'assets' => [
+                        'js/jqGrid/jquery.nav-button.js',
+                        'js/jqGrid/button/grid.column-chooser.js',
                     ],
                 ],
             ],

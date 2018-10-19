@@ -10,6 +10,7 @@
 namespace Popov\ZfcDataGrid\Block;
 
 use Popov\ZfcCurrent\CurrentHelper;
+use Popov\ZfcDataGrid\Service\UserSettingsService;
 use Zend\View\Renderer\PhpRenderer;
 use ZfcDatagrid\Datagrid;
 use ZfcDatagrid\Column;
@@ -25,6 +26,9 @@ abstract class AbstractGrid
 
     /** @var CurrentHelper */
     protected $currentHelper;
+
+    /** @var UserSettingsService */
+    protected $userSettingsService;
 
     /** @return PhpRenderer */
     protected $renderer;
@@ -64,11 +68,13 @@ abstract class AbstractGrid
         ],*/
     ];
 
-    public function __construct(Datagrid $dataGrid, CurrentHelper $currentHelper)
+    public function __construct(Datagrid $dataGrid, CurrentHelper $currentHelper, UserSettingsService $userSettingsService = null)
     {
         $this->dataGrid = $dataGrid;
         $this->currentHelper = $currentHelper;
         $this->renderer = $currentHelper->currentRenderer();
+        $this->userSettingsService = $userSettingsService;
+        //$this->userSetting->setGridId($this->id);
         $dataGrid->setId($this->id);
         $this->initToolbarCallback();
 
@@ -100,6 +106,11 @@ abstract class AbstractGrid
     public function add(array $columnConfig)
     {
         $column = $this->getColumnFactory()->create($columnConfig);
+
+        $this->userSettingsService->apply($column, $this->getDataGrid()->getId());
+
+        //$this->columns[$column->getUniqueId()] = $column;
+
         $this->getDataGrid()->addColumn($column);
 
         return $this;
@@ -107,7 +118,7 @@ abstract class AbstractGrid
 
     public function addButton($buttonConfig)
     {
-        //$button = //...
+        $button = $this->getColumnFactory()->createButton($buttonConfig);
 
         $rendererOptions = $this->getDataGrid()->getToolbarTemplateVariables();
         $rendererOptions['navGridEdit'] = true;
