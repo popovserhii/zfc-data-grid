@@ -18,7 +18,9 @@ return [
             '@grid_js',
             '@formatters_js',
             '@grid_formatters_js',
-            '@grid_buttons_js'
+            '@grid_buttons_js',
+            '@column_chooser_multiselect_css',
+            '@column_chooser_multiselect_js'
         ],
     ],
     'modules' => [
@@ -65,6 +67,16 @@ return [
                         'js/jqGrid/jquery.nav-button.js',
                         'js/jqGrid/button/grid.column-chooser.js',
                     ],
+                ],
+                'column_chooser_multiselect_css' => [
+                    'assets' => [
+                        'js/jqGrid/lib/plugins/ui.multiselect.css',
+                    ]
+                ],
+                'column_chooser_multiselect_js' => [
+                    'assets' => [
+                        'js/jqGrid/lib/plugins/ui.multiselect.js',
+                    ]
                 ],
             ],
         ],
