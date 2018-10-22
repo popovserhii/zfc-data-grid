@@ -48,6 +48,11 @@
 
       var grid = "#" + gridId + "_grid";
       options = $.extend({
+        width: options['width'],
+        height: options['height'],
+        classname: options['classname'],
+        dialog_opts: options['dialog_opts'],
+        msel_opts: options['msel_opts'],
         done: function(perm) {
           if (perm) {
             this.jqGrid("remapColumns", perm, true);
