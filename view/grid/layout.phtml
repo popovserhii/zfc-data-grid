@@ -496,29 +496,6 @@ $(document).ready(function () {
 
     <?php endif; ?>
 
-  /*grid_<?php echo $this->gridId; ?>.jqGrid('navButtonAdd', '#<?= $this->gridId ?>_pager',
-    {
-      buttonicon: "ui-icon-mail-closed",
-      title: "Send Mail",
-      caption: "Send Mail",
-      position: "last",
-      onClickButton: function() {
-        alert('Hello')
-      }
-    });
-
-
-  grid_<?php echo $this->gridId; ?>.jqGrid('navButtonAdd', '#<?= $this->gridId ?>_pager',
-    {
-      buttonicon: "ui-icon-mail-closed",
-      title: "Send Mail",
-      caption: "Send Mail",
-      position: "last",
-      onClickButton: function() {
-        alert('Hello')
-      }
-    });*/
-
     <?php if ($this->data['total']) : ?>
         /*
          * The first page is loaded directly without ajax, that's why it's here complicated...
