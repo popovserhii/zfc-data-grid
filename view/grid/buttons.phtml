@@ -1,0 +1,54 @@
+<?php
+/**
+ * The MIT License (MIT)
+ * Copyright (c) 2018 Serhii Popov
+ * This source file is subject to The MIT License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/MIT
+ *
+ * @category Popov
+ * @package Popov_ZfcDataGrid
+ * @author Serhii Popov <popow.serhii@gmail.com>
+ * @license https://opensource.org/licenses/MIT The MIT License (MIT)
+ */
+?>
+
+<?php if (!isset($navButtons) || !isset($gridId)) : ?>
+	<?php return; ?>
+<?php endif; ?>
+
+<script>
+<?php $request = $this->current('request') ?>
+<?php if (!$request->hasHeader('X-Requested-With')) : ?>
+	<?php $this->inlineScript()->captureStart(); ?>
+<?php endif; ?>
+
+<?php $grid = '#' . $gridId . '_grid'; ?>
+<?php $pager = '#' . $gridId . '_pager'; ?>
+
+jQuery(document).ready(function ($) {
+    <?php foreach ($navButtons as $button) : ?>
+	  <?php $options = json_encode($button->getOptions()); ?>
+	  $("<?php echo $grid ?>").jqGrid('navButtonAdd', "<?php echo $pager ?>", {
+        id: "<?php echo $button->getId() ?>",
+        caption: "<?php echo $button->getCaption() ?>",
+	    buttonicon: "<?php echo $button->getIcon() ?>",
+	    title: "<?php echo $button->getTitle() ?>",
+	    position: "<?php echo $button->getPosition() ?>",
+	    cursor: "<?php echo $button->getCursor() ?>",
+	    onClickButton: function () {
+	      // todo Throw exception if sub navButton plugin is not registered
+          if(!jQuery().navButton['<?= $button->getName() ?>']) {
+            throw new Error('No button plugin is registered in $.fn.navButton with name "<?= $button->getName() ?>"');
+          }
+          $.fn.navButton.<?= $button->getName() ?>("<?php echo $gridId ?>", <?php echo $options ?>);
+        }
+	  });
+    <?php endforeach; ?>
+});
+
+<?php if (!$request->hasHeader('X-Requested-With')) : ?>
+	<?php $this->inlineScript()->captureEnd(); ?>
+<?php endif; ?>
+</script>

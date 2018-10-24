@@ -8,33 +8,24 @@
  * https://opensource.org/licenses/MIT
  *
  * @category Popov
- * @package Popov_<package>
+ * @package Popov_ZfcDataDrid
  * @author Serhii Popov <popow.serhii@gmail.com>
  * @license https://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
 namespace Popov\ZfcDataGrid\Action\Admin;
 
+use Fig\Http\Message\RequestMethodInterface;
 use Interop\Http\Server\RequestHandlerInterface;
-use Popov\ZfcDataGrid\GridHelper;
-use Popov\ZfcDataGrid\Service\UserSettingsService;
-use Popov\ZfcEntity\Helper\EntityHelper;
-use Popov\ZfcUser\Helper\UserHelper;
+use Popov\ZfcDataGrid\Model\UserSettings;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response\JsonResponse;
+use Popov\ZfcDataGrid\Service\UserSettingsService;
+use Popov\ZfcUser\Helper\UserHelper;
 
-class ButtonsAction
+class ButtonsAction implements RequestMethodInterface
 {
-    /**
-     * @var EntityHelper
-     */
-    protected $entityHelper;
-
-    /**
-     * @var GridHelper
-     */
-    protected $gridHelper;
-
     /**
      * @var UserHelper
      */
@@ -43,32 +34,47 @@ class ButtonsAction
     /**
      * @var UserSettingsService
      */
-    protected $userSettingsService;
+    protected $settingsService;
 
-    public function __construct(/*GridHelper $gridHelper, EntityHelper $entityHelper,*/ UserHelper $userHelper, UserSettingsService $userSettingsService)
+    public function __construct(UserHelper $userHelper, UserSettingsService $userSettingsService)
     {
-        /*$this->gridHelper = $gridHelper;
-        $this->entityHelper = $entityHelper;*/
         $this->userHelper = $userHelper;
-        $this->userSettingsService = $userSettingsService;
+        $this->settingsService = $userSettingsService;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $columns = [];
-        $parsedBody = $request->getParsedBody();
-        foreach ($parsedBody['columns'] as $key => $value) {
-            if ($value['hidden'] == 'true') {
-                $columns[$key] = $value;
+        if ($request->getMethod() == self::METHOD_POST) {
+            $params = $request->getParsedBody();
+
+            $columns = [];
+            foreach ($params['columns'] as $key => $value) {
+                if ($value['hidden'] == 'true') {
+                    $columns[$key] = $value;
+                }
             }
+
+            $userId = $this->userHelper->current()->getId();
+            $gridId = $params['gridId'];
+            $columns = json_encode($columns);
+
+            $om = $this->settingsService->getObjectManager();
+
+            /** @var UserSettings $settings */
+            $settings = ($settings = $this->settingsService->getRepository()->findOneBy(['userId' => $userId, 'gridId' => $gridId]))
+                ? $settings
+                : $this->settingsService->getObjectModel();
+
+            $settings->setColumns($columns);
+            if (!$settings->getId()) {
+                $settings->setUserId($userId);
+                $settings->setGridId($gridId);
+            }
+            $om->flush();
+
+            return new JsonResponse(['message' => 'User settings successfully saved!']);
         }
 
-        $userId = $this->userHelper->current()->getId();
-        $gridId = $request->getParsedBody()['gridId'];
-        $columns = json_encode($columns);
-
-        $this->userSettingsService->modifySettings($userId, $gridId, $columns);
-
-        return new JsonResponse(['message' => 'Settings saved']);
+        return new JsonResponse(['error' => 'Your should send POST request for save user settings.']);
     }
 }

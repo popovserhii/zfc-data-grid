@@ -10,6 +10,7 @@
 namespace Popov\ZfcDataGrid\Block;
 
 use Popov\ZfcCurrent\CurrentHelper;
+use Popov\ZfcDataGrid\Model\UserSettings;
 use Popov\ZfcDataGrid\Service\UserSettingsService;
 use Zend\View\Renderer\PhpRenderer;
 use ZfcDatagrid\Datagrid;
@@ -50,82 +51,153 @@ abstract class AbstractGrid
      */
     protected $id = '';
 
-    protected $actions = [
-        /*'view' => [
-            'route' => 'default',
-            'params' => [
-                'controller' => null,
-                'action' => 'view',
-            ],
-            'options'
-        ],
-        'edit' => [
-            'route' => 'default/id',
-            'params' => [
-                'controller' => null,
-                'action' => 'edit',
-            ],
-        ],*/
-    ];
-
-    public function __construct(Datagrid $dataGrid, CurrentHelper $currentHelper, UserSettingsService $userSettingsService = null)
-    {
-        $this->dataGrid = $dataGrid;
-        $this->currentHelper = $currentHelper;
-        $this->renderer = $currentHelper->currentRenderer();
-        $this->userSettingsService = $userSettingsService;
-        //$this->userSetting->setGridId($this->id);
-        $dataGrid->setId($this->id);
-        $this->initToolbarCallback();
-
-        $this->actions = [
-            'create' => [
-                'admin/default' => [ // route name
-                    'controller' => $currentHelper->currentController(), // route params
-                    'action' => 'create',
-                ],
-            ],
-            'back' => [
-                'admin/default' => [ // route name
-                    'controller' => $currentHelper->currentController(), // route params
-                    'action' => 'back',
-                ],
-            ],
-        ];
-    }
-
-    public function init()
-    {}
+    protected $actions = [];
 
     public function getId()
     {
-        //return explode('_', $this->getDataGrid()->getId())[0];
         return str_replace('_grid', '', $this->getDataGrid()->getId());
     }
+
+    public function setDataGrid($dataGrid)
+    {
+        $this->dataGrid = $dataGrid;
+
+        return $this;
+    }
+
+    /**
+     * @return Datagrid
+     */
+    public function getDataGrid()
+    {
+        return $this->dataGrid;
+    }
+
+    /**
+     * @return PhpRenderer
+     */
+    public function getRenderer()
+    {
+        return $this->currentHelper->currentRenderer();
+    }
+
+    public function getResponse()
+    {
+        return $this->getDataGrid()->getResponse();
+    }
+
+    public function setCurrentHelper(CurrentHelper $currentHelper)
+    {
+        $this->currentHelper = $currentHelper;
+
+        return $this;
+    }
+
+    public function getCurrentHelper()
+    {
+        return $this->currentHelper;
+    }
+
+    public function setUserSettingsService(UserSettingsService $settingsService)
+    {
+        $this->userSettingsService = $settingsService;
+
+        return $this;
+    }
+
+    public function getUserSettingsService()
+    {
+        return $this->userSettingsService;
+    }
+
+    public function setToolbar(Toolbar $toolbar)
+    {
+        $this->toolbar = $toolbar;
+    }
+
+    public function getToolbar()
+    {
+        return $this->toolbar;
+    }
+
+    /**
+     * Default Grid preparation
+     */
+    final public function initialize()
+    {
+        $this->dataGrid->setId($this->id);
+
+        $this->initDefault();
+        $this->initToolbarCallback();
+    }
+
+    /**
+     * Custom Grid preparation
+     *
+     * Here you add columns, buttons, etc.
+     */
+    public function init()
+    {}
 
     public function add(array $columnConfig)
     {
         $column = $this->getColumnFactory()->create($columnConfig);
 
+        // @todo Implement more elegant solution
         $this->userSettingsService->apply($column, $this->getDataGrid()->getId());
-
-        //$this->columns[$column->getUniqueId()] = $column;
-
         $this->getDataGrid()->addColumn($column);
 
         return $this;
     }
 
-    public function addButton($buttonConfig)
+    public function addButton(array $buttonConfig)
     {
         $button = $this->getColumnFactory()->createButton($buttonConfig);
 
         $rendererOptions = $this->getDataGrid()->getToolbarTemplateVariables();
-        $rendererOptions['navGridEdit'] = true;
-
         $rendererOptions['navButtons'][] = $button;
 
         $this->getDataGrid()->setToolbarTemplateVariables($rendererOptions);
+
+        return $this;
+    }
+
+	public function initDefault() {
+
+        $this->addButton(['name' => 'ColumnChooser']);
+
+        $this->actions = [
+            'create' => [
+                'admin/default' => [ // route name
+                    'controller' => $this->currentHelper->currentController(), // route params
+                    'action' => 'create',
+                ],
+            ],
+            'back' => [
+                'admin/default' => [ // route name
+                    'controller' => $this->currentHelper->currentController(), // route params
+                    'action' => 'back',
+                ],
+            ],
+        ];
+
+        $grid = $this->getDataGrid();
+        $rendererOptions = $grid->getToolbarTemplateVariables();
+        $rendererOptions['editUrl'] = [
+            'route' => 'admin/default/wildcard',
+            //'route' => 'admin/default',
+            'params' => [
+                'controller' => 'data-grid',
+                'action' => 'modify',
+                'grid' => $grid->getId(),
+            ]
+        ];
+        //$rendererOptions['navGridDel'] = true;
+        //$rendererOptions['navGridSearch'] = true;
+        //$rendererOptions['inlineNavEdit'] = true;
+        //$rendererOptions['inlineNavAdd'] = true;
+        //$rendererOptions['inlineNavCancel'] = true;
+        $grid->setToolbarTemplateVariables($rendererOptions);
     }
 
 	public function initToolbarCallback() {
@@ -185,7 +257,7 @@ abstract class AbstractGrid
             $identity = isset($action['options']['identity']) ? $action['options']['identity'] : $grid->getId() . '_id';
 
             $bg = new Style\BackgroundColor([224, 226, 229]);
-            $fmtr = new Column\Formatter\ExternalLink();
+            $fmtr = new Column\Formatter\Link();
             $fmtr->setAttribute('class', $action['attributes']['class']);
 
             $fmtr->setLink($link . '/' . $fmtr->getColumnValuePlaceholder($grid->getColumnByUniqueId($identity)));
@@ -203,56 +275,6 @@ abstract class AbstractGrid
         //return $actions;
     }
 
-    public function setDataGrid($dataGrid)
-    {
-        $this->dataGrid = $dataGrid;
-
-        return $this;
-    }
-
-    /**
-     * @return Datagrid
-     */
-    public function getDataGrid()
-    {
-        return $this->dataGrid;
-    }
-
-    /**
-     * @return PhpRenderer
-     */
-    public function getRenderer()
-    {
-        return $this->renderer;
-    }
-
-    public function getResponse()
-    {
-        return $this->getDataGrid()->getResponse();
-    }
-
-    public function setCurrentHelper(CurrentHelper $currentHelper)
-    {
-        $this->currentHelper = $currentHelper;
-
-        return $this;
-    }
-
-    public function getCurrentHelper()
-    {
-        return $this->currentHelper;
-    }
-
-    public function setToolbar(Toolbar $toolbar)
-    {
-        $this->toolbar = $toolbar;
-    }
-
-    public function getToolbar()
-    {
-        return $this->toolbar;
-    }
-
     /**
      * Overwrite this method for add custom elements
      *
@@ -266,6 +288,8 @@ abstract class AbstractGrid
     public function setColumnFactory(ColumnFactory $columnFactory)
     {
         $this->columnFactory = $columnFactory;
+
+        return $this;
     }
 
     public function getColumnFactory()
@@ -306,5 +330,4 @@ abstract class AbstractGrid
 	public function ___($singular, $plural, $number) {
 		return $this->getDataGrid()->getTranslator()->translatePlural($singular, $plural, $number);
 	}
-
 }

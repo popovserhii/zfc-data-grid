@@ -8,7 +8,7 @@
  * https://opensource.org/licenses/MIT
  *
  * @category Popov
- * @package Popov_<package>
+ * @package Popov_ZfcDataDrid
  * @author Serhii Popov <popow.serhii@gmail.com>
  * @license https://opensource.org/licenses/MIT The MIT License (MIT)
  */
@@ -62,28 +62,9 @@ class UserSettingsService extends DomainServiceAbstract
     protected function getSettings($gridId)
     {
         if (!$this->settings) {
-            $this->settings = $this->getRepository()->findBy(['userId' => $this->userHelper->current()->getId(), 'gridId' => $gridId]);
+            $this->settings = $this->getRepository()
+                ->findBy(['userId' => $this->userHelper->current()->getId(), 'gridId' => $gridId]);
         }
         return $this->settings;
-    }
-
-    public function modifySettings($userId, $gridId, $columns) {
-        $this->settings = $this->getRepository()->findOneBy(['userId' => $userId, 'gridId' => $gridId]);
-
-        if ($this->settings) {
-            $userSettings = $this->settings;
-            $userSettings->setColumns($columns);
-
-            $this->entityManager->merge($userSettings);
-            $this->entityManager->flush($userSettings);
-        } else {
-            $userSettings = new UserSettings();
-            $userSettings->setUserId($userId);
-            $userSettings->setGridId($gridId);
-            $userSettings->setColumns($columns);
-
-            $this->entityManager->persist($userSettings);
-            $this->entityManager->flush($userSettings);
-        }
     }
 }

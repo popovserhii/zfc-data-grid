@@ -8,7 +8,7 @@
  * https://opensource.org/licenses/MIT
  *
  * @category Popov
- * @package Popov_<package>
+ * @package Popov_ZfcDataGrid
  * @author Serhii Popov <popow.serhii@gmail.com>
  * @license https://opensource.org/licenses/MIT The MIT License (MIT)
  */
@@ -20,13 +20,13 @@ use Popov\ZfcCore\Model\DomainAwareTrait;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="user_settings")
+ * @ORM\Table(name="user_grid_settings")
  */
 class UserSettings
 {
-    const MNEMO = 'settings';
+    const MNEMO = 'gridSettings';
 
-    const TABLE = 'user_settings';
+    const TABLE = 'user_grid_settings';
 
     use DomainAwareTrait;
 
@@ -58,7 +58,7 @@ class UserSettings
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
