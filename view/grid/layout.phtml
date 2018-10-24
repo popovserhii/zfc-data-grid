@@ -465,37 +465,36 @@ $(document).ready(function () {
 
 
     <?php if ($this->isUserFilterEnabled === true) : ?>
-    /*grid_<?php echo $this->gridId; ?>.navGrid("<?php echo $this->gridId; ?>_pager",
-        // the buttons to appear on the toolbar of the grid
-        { edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: false },
-        // options for the Edit Dialog
-        {
-            editCaption: "The Edit Dialog",
-            recreateForm: true,
-            checkOnUpdate : true,
-            checkOnSubmit : true,
-            closeAfterEdit: true,
-            errorTextFormat: function (data) {
-                return 'Error: ' + data.responseText
-            }
-        },
-        // options for the Add Dialog
-        {
-            closeAfterAdd: true,
-            recreateForm: true,
-            errorTextFormat: function (data) {
-                return 'Error: ' + data.responseText
-            }
-        },
-        // options for the Delete Dailog
-        {
-            errorTextFormat: function (data) {
-                return 'Error: ' + data.responseText
-            }
-        });*/
+    //grid_<?php //echo $this->gridId; ?>//.navGrid("<?php //echo $this->gridId; ?>//_pager",
+    //    // the buttons to appear on the toolbar of the grid
+    //    { edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: false },
+    //    // options for the Edit Dialog
+    //    {
+    //        editCaption: "The Edit Dialog",
+    //        recreateForm: true,
+    //        checkOnUpdate : true,
+    //        checkOnSubmit : true,
+    //        closeAfterEdit: true,
+    //        errorTextFormat: function (data) {
+    //            return 'Error: ' + data.responseText
+    //        }
+    //    },
+    //    // options for the Add Dialog
+    //    {
+    //        closeAfterAdd: true,
+    //        recreateForm: true,
+    //        errorTextFormat: function (data) {
+    //            return 'Error: ' + data.responseText
+    //        }
+    //    },
+    //    // options for the Delete Dailog
+    //    {
+    //        errorTextFormat: function (data) {
+    //            return 'Error: ' + data.responseText
+    //        }
+    //    });
 
     <?php endif; ?>
-
 
     <?php if ($this->data['total']) : ?>
         /*
@@ -515,3 +514,8 @@ $(document).ready(function () {
     <?php $this->inlineScript()->captureEnd(); ?>
 <?php endif; ?>
 </script>
+
+<?php echo $this->partial('zfc-datagrid/renderer/jqGrid/buttons', [
+    'navButtons' => $this->navButtons,
+    'gridId' => $this->gridId,
+]); ?>

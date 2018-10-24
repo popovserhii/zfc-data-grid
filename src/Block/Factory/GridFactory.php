@@ -14,6 +14,12 @@ use DoctrineModule\Persistence\ObjectManagerAwareInterface;
 use Doctrine\ORM\EntityManager;
 use Interop\Container\ContainerInterface;
 use Popov\ZfcCore\Helper\UrlHelper;
+use Popov\ZfcDataGrid\Block\AbstractGrid;
+use Popov\ZfcDataGrid\Service\UserSettingsService;
+use Popov\ZfcDataGridPlugin\Service\Plugin\DataGridPluginFactory;
+use Popov\ZfcDataGridPlugin\Service\Plugin\DataGridPluginManager;
+use Popov\ZfcUser\Form\User;
+use Popov\ZfcUser\Helper\UserHelper;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\Stdlib\InitializableInterface;
 use Zend\ServiceManager\Exception;
@@ -26,6 +32,7 @@ use Popov\ZfcBlock\Plugin\BlockPluginManager;
 //use Popov\ZfcBlock\Block\Admin\ActionPanel;
 use Popov\ZfcCurrent\CurrentHelper;
 use Popov\Simpler\SimplerHelper;
+use ZfcDatagrid\Datagrid;
 
 class GridFactory implements AbstractFactoryInterface {
 
@@ -34,7 +41,7 @@ class GridFactory implements AbstractFactoryInterface {
         return $this->canCreateServiceWithName($container, $requestedName);
     }
 
-	public function canCreateServiceWithName($container, $requestedName, array $options = null) {
+	public function canCreateServiceWithName(ContainerInterface $container, $requestedName, array $options = null) {
 		return (substr($requestedName, -4) === 'Grid');
 	}
 
@@ -43,7 +50,7 @@ class GridFactory implements AbstractFactoryInterface {
         return $this->createServiceWithName($container, $requestedName, $options);
     }
 
-	public function createServiceWithName($container, $requestedName, array $options = null) {
+	public function createServiceWithName(ContainerInterface$container, $requestedName, array $options = null) {
 		$className = $this->getClassName($container, $requestedName);
 
         $translator = $container->get(TranslatorInterface::class);
@@ -54,38 +61,20 @@ class GridFactory implements AbstractFactoryInterface {
 		//$renderer = $container->get('ViewRenderer');
         /** @var BlockPluginManager $bpm */
 		$bpm = $container->get('BlockPluginManager');
-		/** @var UrlHelper $urlHelper */
+        /** @var DataGridPluginManager $cpm */
+        $cpm = $container->get('DataGridPluginManager');
+        /** @var UrlHelper $urlHelper */
 		$urlHelper = $container->get(UrlHelper::class);
 		/** @var CurrentHelper $currentHelper */
 		$currentHelper = $container->get(CurrentHelper::class);
-        $simplerHelper = $container->get(SimplerHelper::class);
-        // Important get route from current plugin for correct work of forward
-		//$route = $currentPlugin->currentRoute();
-		// Important get route from current controller for correct work of forward
-        //$route = $currentHelper->currentRoute();
-		//$paramsPlugin = $currentPlugin->getController()->plugin('params');
 
-		//$route = $sm->get('Application')->getMvcEvent()->getRouteMatch();
-		//$params = $currentHelper->currentMatchedRouteParams();
 
-        //\Zend\Debug\Debug::dump($params); die(__METHOD__);
+		/** @var UserSettingsService $userSettingsService */
+        $userSettingsService = $container->get(UserSettingsService::class);
 
-		#$url = [ // Important get route from 'params' plugin for correct work of forward
-		#	'controller' => $paramsPlugin->fromRoute('controller'), 
-		#	'action' => $paramsPlugin->fromRoute('action')
-		#];
 
-        //$routeMatch = $sm->get('Application')->getMvcEvent()->getRouteMatch();
-
-        //echo $routeMatch->getMatchedRouteName();
-
-		//\Zend\Debug\Debug::dump([$routeMatch->getMatchedRouteName()]); //die(__METHOD__);
-		//\Zend\Debug\Debug::dump([$route->getMatchedRouteName()]); //die(__METHOD__);
-
-        //\Zend\Debug\Debug::dump($urlPlugin->fromRoute($route->getMatchedRouteName(), $params)); //die(__METHOD__);
-
+        /** @var Datagrid $grid */
 		$grid = clone $container->get('ZfcDatagrid\Datagrid');
-		$gridBlock = new $className($grid, $currentHelper);
 
         $grid->setRendererName('jqGrid');
         $grid->setTranslator($translator);
@@ -97,25 +86,20 @@ class GridFactory implements AbstractFactoryInterface {
             $currentHelper->currentRouteParams()
         ));
 
-        $rendererOptions = $grid->getToolbarTemplateVariables();
-        $rendererOptions['editUrl'] = [
-            'route' => 'admin/default/wildcard',
-            //'route' => 'admin/default',
-            'params' => [
-                'controller' => 'data-grid',
-                'action' => 'modify',
-                'grid' => $grid->getId(),
-            ]
-        ];
-        //$rendererOptions['navGridDel'] = true;
-        //$rendererOptions['navGridSearch'] = true;
-        //$rendererOptions['inlineNavEdit'] = true;
-        //$rendererOptions['inlineNavAdd'] = true;
-        //$rendererOptions['inlineNavCancel'] = true;
-        $grid->setToolbarTemplateVariables($rendererOptions);
 
-        //\Zend\Debug\Debug::dump([$className, $rendererOptions['editUrl']]); die(__METHOD__);
+        /** @var AbstractGrid $gridBlock */
+		$gridBlock = new $className();
 
+		// We must create new ColumnFactory for each grid
+        $gridBlock->setColumnFactory(new ColumnFactory($cpm, $config))
+            ->setDataGrid($grid)
+            ->setCurrentHelper($currentHelper)
+            ->setUserSettingsService($userSettingsService)
+            ->setToolbar($bpm->get('AdminToolbar'));
+
+        if ($gridBlock instanceof ObjectManagerAwareInterface) {
+            $gridBlock->setObjectManager($om);
+        }
 
         /*if (isset($config['grid_block_config']['template_map']['grid/list'])
             && $config['grid_block_config']['template_map']['grid/list']
@@ -123,18 +107,7 @@ class GridFactory implements AbstractFactoryInterface {
             $grid->setTemplate($config['grid_block_config']['template_map']['grid/list']);
         }*/
 
-        $cpm = $container->get('DataGridPluginManager');
-
-        //\Zend\Debug\Debug::dump([get_class($bpm), get_class($bpm->get('block/admin/toolbar'))]); die(__METHOD__);
-
-		//$gridBlock->setToolbar($bpm->get('block/admin/toolbar'));
-        $gridBlock->setToolbar($bpm->get('AdminToolbar'));
-
-        // We must create new ColumnFactory for each grid
-        $gridBlock->setColumnFactory(new ColumnFactory($cpm,/* $simplerHelper,*/ $config));
-		if ($gridBlock instanceof ObjectManagerAwareInterface) {
-			$gridBlock->setObjectManager($om);
-		}
+        $gridBlock->initialize();
 
 		if ($gridBlock instanceof InitializableInterface) {
 			//$gridBlock->initToolbarCallback();

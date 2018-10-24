@@ -2,6 +2,8 @@
 
 namespace Popov\ZfcDataGrid;
 
+use Popov\ZfcDataGrid\Service\UserSettingsService;
+
 return [
     'assetic_configuration' => require_once 'assets.config.php',
 
@@ -71,6 +73,7 @@ return [
             'grid/toolbar' => __DIR__ . '/../view/grid/toolbar.phtml',
             'zfc-datagrid/renderer/jqGrid/layout' => __DIR__ . '/../view/grid/layout.phtml',
             'zfc-datagrid/renderer/jqGrid/footer' => __DIR__ . '/../view/grid/footer.phtml',
+            'zfc-datagrid/renderer/jqGrid/buttons' => __DIR__ . '/../view/grid/buttons.phtml',
             'zfc-datagrid/toolbar/export' => __DIR__ . '/../view/grid/export.phtml',
         ],
         'template_path_stack' => [
@@ -95,4 +98,19 @@ return [
         ],
     ],
 
+    'doctrine' => [
+        'driver' => [
+            __NAMESPACE__ . '_driver' => [
+                'class' => \Doctrine\ORM\Mapping\Driver\AnnotationDriver::class,
+                'cache' => 'array',
+                'paths' => [__DIR__ . '/../src/Model']
+            ],
+            'orm_default' => [
+                'class' => \Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain::class,
+                'drivers' => [
+                    __NAMESPACE__ . '\Model' => __NAMESPACE__ . '_driver'
+                ]
+            ]
+        ],
+    ],
 ];

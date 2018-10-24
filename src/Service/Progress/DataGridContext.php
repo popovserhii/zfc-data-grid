@@ -3,7 +3,7 @@
  * Enter description here...
  *
  * @category Popov
- * @package Popov_<package>
+ * @package Popov_ZfcDataDrid
  * @author Serhii Popov <popow.serhii@gmail.com>
  * @datetime: 02.11.2016 7:21
  */
