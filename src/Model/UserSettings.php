@@ -51,7 +51,7 @@ class UserSettings
 
     /**
      * @var string
-     * @ORM\Column(name="columns", type="string", nullable=false, length=255)
+     * @ORM\Column(name="columns", type="text")
      */
     private $columns;
 

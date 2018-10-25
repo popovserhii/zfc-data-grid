@@ -155,7 +155,7 @@ abstract class AbstractGrid
         $button = $this->getColumnFactory()->createButton($buttonConfig);
 
         $rendererOptions = $this->getDataGrid()->getToolbarTemplateVariables();
-        $rendererOptions['navButtons'][] = $button;
+        $rendererOptions['navButtons'][$button->getName()] = $button;
 
         $this->getDataGrid()->setToolbarTemplateVariables($rendererOptions);
 

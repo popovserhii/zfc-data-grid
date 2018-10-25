@@ -46,14 +46,20 @@ class UserSettingsService extends DomainServiceAbstract
     public function apply(AbstractColumn $column, $gridId)
     {
         $settings = $this->getSettings($gridId);
-
         if ($settings) {
-            $hiddenColumns = json_decode($settings[0]->getColumns(), true);
-            foreach ($hiddenColumns as $name => $value) {
+            $columns = json_decode($settings[0]->getColumns(), true);
+            foreach ($columns as $name => $value) {
                 if ($name == $column->getUniqueId()) {
-                    if ($value['hidden'] == true) {
+                    if ($value['hidden'] == "true") {
                         $column->setHidden(true);
+                    } else {
+                        $column->setHidden(false);
                     }
+                    if ($value['position']) {
+                        $column->setPosition($value['position']);
+                    }
+
+                    return;
                 }
             }
         }
@@ -65,6 +71,7 @@ class UserSettingsService extends DomainServiceAbstract
             $this->settings = $this->getRepository()
                 ->findBy(['userId' => $this->userHelper->current()->getId(), 'gridId' => $gridId]);
         }
+
         return $this->settings;
     }
 }

@@ -49,10 +49,13 @@ class ButtonsAction implements RequestMethodInterface
             $params = $request->getParsedBody();
 
             $columns = [];
+            $position = 0;
+            $offset = 100;
+
             foreach ($params['columns'] as $key => $value) {
-                if ($value['hidden'] == 'true') {
-                    $columns[$key] = $value;
-                }
+                $value['position'] = $position + $offset;
+                $columns[$key] = $value;
+                $offset += 100;
             }
 
             $userId = $this->userHelper->current()->getId();
@@ -71,7 +74,7 @@ class ButtonsAction implements RequestMethodInterface
                 $settings->setUserId($userId);
                 $settings->setGridId($gridId);
             }
-            $om->flush();
+            $om->flush($settings);
 
             return new JsonResponse(['message' => 'User settings successfully saved!']);
         }
