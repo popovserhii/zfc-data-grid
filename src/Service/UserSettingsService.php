@@ -50,12 +50,12 @@ class UserSettingsService extends DomainServiceAbstract
             $columns = json_decode($settings[0]->getColumns(), true);
             foreach ($columns as $name => $value) {
                 if ($name == $column->getUniqueId()) {
-                    if ($value['hidden'] == "true") {
+                    if (isset($value['hidden'] ) && $value['hidden'] == "true") {
                         $column->setHidden(true);
                     } else {
                         $column->setHidden(false);
                     }
-                    if ($value['position']) {
+                    if (isset($value['position'])) {
                         $column->setPosition($value['position']);
                     }
 
