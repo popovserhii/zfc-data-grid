@@ -264,6 +264,17 @@ $(document).ready(function () {
         sortorder: '<?php echo $this->activeParameters[$parameterNames['sortDirections']]; ?>',
 
         footerrow: <?= isset($this->gridFooterRow) ? (int) $this->gridFooterRow : 0 ?>,
+        userDataOnFooter: <?= isset($this->userDataOnFooter) ? (int) $this->userDataOnFooter : 0 ?>,
+
+        gridComplete: function () {
+            var $gridTotal = $('#marketOrder_grid');
+            var colSum = $gridTotal.jqGrid('getCol', 'marketOrder_orderTotal', false, 'sum');
+          $gridTotal.jqGrid('footerData', 'set',
+            {
+              'customer_email': 'Total: ',
+              'marketOrder_orderTotal': Number.parseFloat(colSum).toFixed(2)
+            });
+        },
 
         prmNames : {
             page: '<?php echo $parameterNames['currentPage']; ?>',
