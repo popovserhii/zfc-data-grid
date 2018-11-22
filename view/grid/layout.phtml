@@ -266,8 +266,11 @@ $(document).ready(function () {
         footerrow: <?= isset($this->gridFooterRow['total']) ? (int) $this->gridFooterRow : 0 ?>,
         userDataOnFooter: <?= isset($this->userDataOnFooter) ? (int) $this->userDataOnFooter : 0 ?>,
 
-        <?php if (isset($this->gridFooterRow['total'])) : ?>
-	      gridComplete: function () {
+      gridComplete: function () {
+        console.log(arguments);
+         $(this).trigger('jqGrid.gridComplete', /*[rowId, status, e]*/);
+
+          <?php if (isset($this->gridFooterRow['total'])) : ?>
 	        var $gridTotal = $('#<?php echo $this->gridId; ?>_grid');
 	        var colSum = $gridTotal.jqGrid('getCol', '<?php echo $this->gridFooterRow['total']?>', false, 'sum');
 	        $gridTotal.jqGrid('footerData', 'set',
@@ -275,10 +278,11 @@ $(document).ready(function () {
 	              <?php if (isset($this->gridFooterRow['labelField'])) : ?>
 	            '<?php echo $this->gridFooterRow['labelField']?>': 'Total: ',
 	              <?php endif; ?>
-                '<?php echo $this->gridFooterRow['total']?>': Number.parseFloat(colSum).toFixed(2)
+	            '<?php echo $this->gridFooterRow['total']?>': Number.parseFloat(colSum).toFixed(2)
 	          });
-	      },
-        <?php endif; ?>
+          <?php endif; ?>
+
+      },
 
         prmNames : {
             page: '<?php echo $parameterNames['currentPage']; ?>',
