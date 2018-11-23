@@ -267,8 +267,7 @@ $(document).ready(function () {
         userDataOnFooter: <?= isset($this->userDataOnFooter) ? (int) $this->userDataOnFooter : 0 ?>,
 
       gridComplete: function () {
-        console.log(arguments);
-         $(this).trigger('jqGrid.gridComplete', /*[rowId, status, e]*/);
+         $(this).trigger('jqGrid.gridComplete');
 
           <?php if (isset($this->gridFooterRow['total'])) : ?>
 	        var $gridTotal = $('#<?php echo $this->gridId; ?>_grid');
