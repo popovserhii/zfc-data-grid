@@ -59,7 +59,9 @@ class GridHelper
                 continue;
             }
             list($moduleMnemo, $field) = explode('_', $name);
-            $moduleMnemoAlias = strtolower($filter->filter($moduleMnemo));
+            // Entity mnemo and Module mnemo must be in camelCase syntax
+            //$moduleMnemoAlias = strtolower($filter->filter($moduleMnemo));
+            $moduleMnemoAlias = $moduleMnemo;
 
             if (isset($params[$moduleMnemo . '_id'])) {
                 if ($gridMnemo !== $moduleMnemo) { // received grouped collection, add it as child of main grid
