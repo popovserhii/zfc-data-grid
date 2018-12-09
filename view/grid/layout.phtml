@@ -7,7 +7,7 @@ $paginator = $this->paginator;
 
 $parameterNames = $this->optionsRenderer['parameterNames'];
 
-$url = $this->url(null, array(), array(), true);
+$url = $this->url(null, array(), ['force_canonical' => true], true);
 if($this->overwriteUrl != ''){
     $url = $this->overwriteUrl;
 }
@@ -201,29 +201,27 @@ $(document).ready(function () {
         }
     }
 
-
-
     var grid_<?php echo $this->gridId; ?> = $('#<?php echo $this->gridId; ?>_grid').jqGrid({
         idPrefix: '<?php echo $this->gridId; ?>_',
-        url: '<?php echo $url; ?>',
+        url: '<?php echo $this->serverUrl() . $url; ?>',
 
         <?php if (isset($this->editUrl)) : ?>
-        <?php //\Zend\Debug\Debug::dump(key($this->editRoute)); die(__METHOD__); ?>
-        <?php $params = $this->editUrl['params']; ?>
-        <?php //$params['id'] = $this->gridId; ?>
-        editurl: '<?echo $this->url($this->editUrl['route'], $params) ?>',
+	        <?php $params = $this->editUrl['params']; ?>
+	        editurl: '<?echo $this->url($this->editUrl['route'], $params, ['force_canonical' => true]) ?>',
         <?php endif; ?>
 
-        caption: '<?php echo $this->title; ?>',
+        caption: '<?php echo $this->title ?>',
 
-        responsive : true,
-        styleUI : "Bootstrap", // http://www.trirand.com/blog/?p=1484
+        //styleUI : 'Bootstrap4', // http://www.trirand.com/blog/?p=1484
+        //iconSet : 'fontAwesome',
 
         //width: 'auto',
         //height: '600px',
         //height: 'auto',
+        responsive : true,
+
         height: '<?= $this->height ?? 'auto' ?>',
-        scrollerbar:true,
+        scrollerbar: true,
         /*height: function() {
          var wHeight = $(window).height();
          var hHeight = $('.header').height();
@@ -270,9 +268,9 @@ $(document).ready(function () {
          $(this).trigger('jqGrid.gridComplete');
 
           <?php if (isset($this->gridFooterRow['total'])) : ?>
-	        var $gridTotal = $('#<?php echo $this->gridId; ?>_grid');
-	        var colSum = $gridTotal.jqGrid('getCol', '<?php echo $this->gridFooterRow['total']?>', false, 'sum');
-	        $gridTotal.jqGrid('footerData', 'set',
+	        var gridTotal = $('#<?php echo $this->gridId; ?>_grid');
+	        var colSum = gridTotal.jqGrid('getCol', '<?php echo $this->gridFooterRow['total']?>', false, 'sum');
+	        gridTotal.jqGrid('footerData', 'set',
 	          {
 	              <?php if (isset($this->gridFooterRow['labelField'])) : ?>
 	            '<?php echo $this->gridFooterRow['labelField']?>': 'Total: ',
@@ -280,7 +278,6 @@ $(document).ready(function () {
 	            '<?php echo $this->gridFooterRow['total']?>': Number.parseFloat(colSum).toFixed(2)
 	          });
           <?php endif; ?>
-
       },
 
         prmNames : {

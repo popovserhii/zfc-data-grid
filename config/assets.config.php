@@ -31,7 +31,9 @@ return [
                     'assets' => [
                         // js\jqGrid\css\ui.jqgrid.css
                         //'js/jqGrid/css/ui.jqgrid.css',
-                        'js/jqGrid/lib/css/ui.jqgrid-bootstrap.css',
+                        //'js/jqGrid/lib/css/ui.jqgrid.css',
+                        'js/jqGrid/lib/css/ui.jqgrid-bootstrap4.css',
+                        //'js/jqGrid/lib/css/ui.jqgrid-bootstrap-ui.css',
                     ],
                 ],
                 'jqGrid_js' => [

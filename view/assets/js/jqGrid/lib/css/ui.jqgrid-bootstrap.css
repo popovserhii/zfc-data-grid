@@ -30,7 +30,9 @@
 .ui-jqgrid .ui-jqgrid-title { 
 	padding-top: 5px; 
 	vertical-align: middle;
+	position: absolute;
 }
+
 .ui-jqgrid .ui-jqgrid-titlebar-close { 
 	color: inherit; 
 	position: absolute;
@@ -422,7 +424,8 @@ div.tablediv > .table-bordered {
 .ui-jqgrid .ui-th-subgrid {height:20px;}
 .tablediv > .row { margin: 0 0}
 /* loading */
-.ui-jqgrid .loading {
+.ui-jqgrid .loading,
+.loading_pivot {
 	position: absolute; 
 	top: 45%;
 	left: 45%;
@@ -438,7 +441,6 @@ div.tablediv > .table-bordered {
 }
 .ui-jqgrid .jqgrid-overlay { 
 	display:none;
-	z-index:100;
 }
 /* IE * html .jqgrid-overlay {width: expression(this.parentNode.offsetWidth+'px');height: expression(this.parentNode.offsetHeight+'px');} */
 * .jqgrid-overlay iframe {
@@ -520,6 +522,9 @@ div.tablediv > .table-bordered {
 }
 .ui-jqdialog>.ui-resizable-se { }
 .ui-jqgrid>.ui-resizable-se { }
+.jqgrid-overlay-modal {
+	display : none;
+}
 /* end Modal window*/
 /* Form edit */
 .ui-jqdialog-content .FormGrid { 
@@ -887,7 +892,6 @@ ul.ui-search-menu li, ul.ui-nav-menu li {
 .ui-jqgrid .ui-jqgrid-htable .ui-th-div {
 	height:17px;
 	margin-top:5px;
-	display:inine-block;
 }
 .column-menu, .ui-search-menu {
 	padding: 10px 15px;
@@ -927,4 +931,65 @@ td.menu_text {
 }
 .search_buttons #bs_search {
 	margin-left: 3px;
+}
+/*menubar*/
+.ui-jqgrid .ui-jqgrid-menubar {
+	margin: 5px 5px;
+	width:16px;
+	height:16px;
+}
+.ui-jqgrid a.ui-jqgrid-menubar {
+	text-decoration: none;
+	color : #010101; /*default*/
+}
+.ui-jqgrid .ui-jqgrid-menubar:hover {
+	margin: 5px 5px;
+	background-color: #ddd;
+	text-decoration: none;
+}
+.ui-jqgrid .menubar-rtl {
+	float : right;
+}
+
+.ui-jqgrid .menubar-ltr {
+	float : left;
+}
+/*printing*/
+
+.jqgridprint {
+	width : 100%;
+	font-size: 13px;
+}
+
+.jqgridprint th,
+.jqgridprint td {
+	padding: 4px 4px 4px 4px ;
+	text-align: center ;
+}
+.jqgridprint th {
+	border-bottom: 2px solid #333333 ;
+}
+.jqgridprint td {
+	border-bottom: 1px dotted #999999 ;
+}
+
+.jqgridprint tfoot td {
+	border-bottom-width: 0px ;
+	border-top: 2px solid #333333 ;
+	padding-top: 20px ;
+}
+.ui-jqgrid .jqgrid-caption-menu 
+{ 
+	left:0;
+	top:30px;
+	position:absolute;
+	display:none;
+	font-size: inherit;
+	width : auto;
+}
+.ui-jqgrid .jqgrid-column-menu
+{
+	font-size:inherit;
+	width:auto;
+	position :absolute;
 }
