@@ -1,18 +1,18 @@
 (function ($) {
-  "use strict";
+  'use strict';
 
   var idsOfSelectedRows = [];
   var getColumnNamesFromColModel = function () {
-      var colModel = this.jqGrid("getGridParam", "colModel");
-      return $.map(colModel, function (cm, iCol) {
-        // we remove "rn", "cb", "subgrid" columns to hold the column information
-        // independent from other jqGrid parameters
-        return $.inArray(cm.name, ["rn", "cb", "subgrid"]) >= 0 ? null : cm.name;
-      });
-    };
+    var colModel = this.jqGrid('getGridParam', 'colModel');
+    return $.map(colModel, function (cm, iCol) {
+      // we remove 'rn', 'cb', 'subgrid' columns to hold the column information
+      // independent from other jqGrid parameters
+      return $.inArray(cm.name, ['rn', 'cb', 'subgrid']) >= 0 ? null : cm.name;
+    });
+  };
 
   function saveColumnState() {
-    var p = this.jqGrid("getGridParam"), colModel = p.colModel, i, l = colModel.length, colItem, cmName,
+    var p = this.jqGrid('getGridParam'), colModel = p.colModel, i, l = colModel.length, colItem, cmName,
       postData = p.postData,
       columnsState = {
         search: p.search,
@@ -33,7 +33,7 @@
     for (i = 0; i < l; i++) {
       colItem = colModel[i];
       cmName = colItem.name;
-      if (cmName !== "rn" && cmName !== "cb" && cmName !== "subgrid") {
+      if (cmName !== 'rn' && cmName !== 'cb' && cmName !== 'subgrid') {
         colStates[cmName] = {
           hidden: colItem.hidden
         };
@@ -45,28 +45,21 @@
 
   $.extend($.fn.navButton, {
     columnChooser: function (gridId, options) {
-
-      var grid = "#" + gridId + "_grid";
-      options = $.extend({
-        width: options['width'],
-        height: options['height'],
-        classname: options['classname'],
-        dialog_opts: options['dialog_opts'],
-        msel_opts: options['msel_opts'],
-        done: function (perm) {
-          if (perm) {
-            this.jqGrid("remapColumns", perm, true);
-            var columns = saveColumnState.call(this);
-            $.ajax({
-              url: "/admin/data-grid/buttons",
-              type: "post",
-              data: {"columns": columns, "gridId": gridId}
-            });
-          }
+      var onDone = function (perm) {
+        if (perm) {
+          this.jqGrid('remapColumns', perm, true);
+          var columns = saveColumnState.call(this);
+          $.ajax({
+            url: options['editUrl'],
+            type: 'post',
+            data: {'columns': columns, 'gridId': gridId}
+          });
         }
-      });
+      };
 
-      $(grid).jqGrid("columnChooser", options);
+      options = $.extend({done: onDone}, options);
+      var grid = '#' + gridId + '_grid';
+      $(grid).jqGrid('columnChooser', options);
     }
   });
 })(jQuery);

@@ -13,6 +13,15 @@ return [
         ]
     ],
 
+    'ZfcDatagrid' => [
+        'settings' => [
+            'export' => [
+                // Use SID in URL
+                'useTransSid' => false,
+            ],
+        ],
+    ],
+
     'dependencies' => [
         //'aliases' => [],
         //'invokables' => [],

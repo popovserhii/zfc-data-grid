@@ -1,8 +1,6 @@
 (function ($) {
   "use strict";
 
-  let linkFormatter = new DataGrid_LinkFormatter();
-
   $.extend($.fn.fmatter, {
     link: function (cellValue, options, rowData) {
       let value = cellValue.trim();

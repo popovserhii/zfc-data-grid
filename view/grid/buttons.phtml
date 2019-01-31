@@ -38,7 +38,6 @@ jQuery(document).ready(function ($) {
 	    position: "<?php echo $button->getPosition() ?>",
 	    cursor: "<?php echo $button->getCursor() ?>",
 	    onClickButton: function () {
-	      // todo Throw exception if sub navButton plugin is not registered
           if(!jQuery().navButton['<?= $button->getName() ?>']) {
             throw new Error('No button plugin is registered in $.fn.navButton with name "<?= $button->getName() ?>"');
           }

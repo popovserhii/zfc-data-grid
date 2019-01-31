@@ -16,11 +16,11 @@ return [
             '@jqGrid_js',
             //'@grid_css',
             '@grid_js',
-            '@formatters_js',
+            //'@formatters_js',
             '@grid_formatters_js',
             '@grid_buttons_js',
-            '@column_chooser_multiselect_css',
-            '@column_chooser_multiselect_js'
+            '@grid_column_chooser_multiselect_css',
+            '@grid_column_chooser_multiselect_js'
         ],
     ],
     'modules' => [
@@ -50,18 +50,18 @@ return [
                         'js/jqGrid/modal.js',
                     ],
                 ],
-                'formatters_js' => [
+                /*'formatters_js' => [
                     'assets' => [
                         'js/formatter/abstract-formatter.js',
                         'js/formatter/html-tag-formatter.js',
                         'js/formatter/link-formatter.js',
                     ],
-                ],
+                ],*/
                 'grid_formatters_js' => [
                     'assets' => [
                         'js/jqGrid/formatter/grid.chain.js',
                         'js/jqGrid/formatter/grid.link.js',
-                        'js/jqGrid/formatter/grid.drop-down.js',
+                        //'js/jqGrid/formatter/grid.drop-down.js',
                     ],
                 ],
                 'grid_buttons_js' => [
@@ -70,12 +70,12 @@ return [
                         'js/jqGrid/button/grid.column-chooser.js',
                     ],
                 ],
-                'column_chooser_multiselect_css' => [
+                'grid_column_chooser_multiselect_css' => [
                     'assets' => [
                         'js/jqGrid/lib/plugins/ui.multiselect.css',
                     ]
                 ],
-                'column_chooser_multiselect_js' => [
+                'grid_column_chooser_multiselect_js' => [
                     'assets' => [
                         'js/jqGrid/lib/plugins/ui.multiselect.js',
                     ]

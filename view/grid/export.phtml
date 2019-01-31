@@ -1,5 +1,5 @@
-<?php 
-$url = $this->url(null, array(), array(), true);
+<?php
+$url = $this->url(null, [], ['force_canonical' => true], true);
 if($this->overwriteUrl != ''){
     $url = $this->overwriteUrl;
 }
