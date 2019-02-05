@@ -86,8 +86,8 @@ class GridFactory implements AbstractFactoryInterface {
             $currentHelper->currentRouteParams()
         ));
 
-        if ($grid->getOptions()['settings']['export']['useTransSid'] && SID) {
-            $grid->addParameter(...explode('=', SID));
+        if ($grid->getOptions()['settings']['export']['useTransSid']) {
+            $grid->addParameter(session_name(), session_id());
         }
 
         /** @var AbstractGrid $gridBlock */

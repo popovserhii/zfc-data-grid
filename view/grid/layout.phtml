@@ -203,7 +203,7 @@ $(document).ready(function () {
 
     var grid_<?php echo $this->gridId; ?> = $('#<?php echo $this->gridId; ?>_grid').jqGrid({
         idPrefix: '<?php echo $this->gridId; ?>_',
-        url: '<?php echo $this->serverUrl() . $url; ?>',
+        url: '<?php echo $url; ?>',
 
         <?php if (isset($this->editUrl)) : ?>
 	        <?php $params = $this->editUrl['params']; ?>
@@ -212,7 +212,7 @@ $(document).ready(function () {
 
         caption: '<?php echo $this->title ?>',
 
-        //styleUI : 'Bootstrap4', // http://www.trirand.com/blog/?p=1484
+        styleUI : 'Bootstrap4', // http://www.trirand.com/blog/?p=1484
         //iconSet : 'fontAwesome',
 
         //width: 'auto',
@@ -294,7 +294,7 @@ $(document).ready(function () {
 
         datatype : 'local',
         <?php if ($this->data['total']) : ?>
-        data: {data: <?php echo json_encode($this->data); ?>},
+        data: {data: <?php echo $data = json_encode($this->data); ?>},
         <?php endif; ?>
 
         jsonReader : {
@@ -530,7 +530,7 @@ $(document).ready(function () {
 <?php endif; ?>
 </script>
 
-<?php echo $this->partial('zfc-datagrid/renderer/jqGrid/buttons', [
+<?php /*echo $this->partial('zfc-datagrid/renderer/jqGrid/buttons', [
     'navButtons' => $this->navButtons,
     'gridId' => $this->gridId,
-]); ?>
+])*/ ?>
