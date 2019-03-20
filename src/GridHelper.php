@@ -52,14 +52,15 @@ class GridHelper
         //$routeParams = $this->currentHelper->currentRouteParams();
         $gridMnemo = $this->getCurrentGridId();
         $params = $request->getParsedBody();
-        $filter = new CamelCaseToDash();
+        #$filter = new CamelCaseToDash();
         $gridData = [];
         foreach ($params as $name => $value) {
             if (in_array($name, ['id', 'oper']) /*|| (substr($name, -3, 3) === '_id')*/) { // skip specialized keywords
                 continue;
             }
             list($moduleMnemo, $field) = explode('_', $name);
-            $moduleMnemoAlias = strtolower($filter->filter($moduleMnemo));
+            //$moduleMnemoAlias = strtolower($filter->filter($moduleMnemo));
+            $moduleMnemoAlias = $moduleMnemo;
 
             if (isset($params[$moduleMnemo . '_id'])) {
                 if ($gridMnemo !== $moduleMnemo) { // received grouped collection, add it as child of main grid

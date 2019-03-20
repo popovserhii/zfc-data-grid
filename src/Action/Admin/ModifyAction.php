@@ -106,8 +106,8 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface, Event
             foreach ($gridData[$entity->getMnemo()] as $itemId => $entityData) {
                 $item = $entityHelper->find($itemId, $entity, EntityHelper::CREATE_EMPTY);
                 $params = ['context' => $this, 'gridData' => $params, 'entity' => $entity];
-                $this->getEventManager()->trigger($operation . '.on', $item, $params);
-                //$items[] = $item->exchangeArray($entityData);
+                // @todo fix ProgressContext
+                #$this->getEventManager()->trigger($operation . '.on', $item, $params);
 
                 // @todo Hardcode. Implement Doctrine Hydrator
                 foreach ($entityData as $property => $value) {
@@ -132,12 +132,12 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface, Event
                     }
                 }
 
-                $this->getEventManager()->trigger($operation, $item, $params);
+                #$this->getEventManager()->trigger($operation, $item, $params);
             }
         }
 
         $om->flush();
-        $this->getEventManager()->trigger($operation . '.post', $items, ['context' => $this]);
+        #$this->getEventManager()->trigger($operation . '.post', $items, ['context' => $this]);
 
         return [
             'message' => sprintf('Items successfully have been %sed', $operation),
