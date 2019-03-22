@@ -112,6 +112,9 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface, Event
                 // @todo Hardcode. Implement Doctrine Hydrator
                 foreach ($entityData as $property => $value) {
                     if (method_exists($item, $method = 'set' . ucfirst($property))) {
+                        if ('marketOrder' == $property && !$value) {
+                            $value = null;
+                        }
                         $item->{$method}($value);
                     } elseif (method_exists($item, $method = 'add' . ucfirst($property))) {
                         $getMethod = 'get' . ucfirst($property) . 's';
