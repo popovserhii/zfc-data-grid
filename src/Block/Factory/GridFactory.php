@@ -18,7 +18,6 @@ use Popov\ZfcDataGrid\Block\AbstractGrid;
 use Popov\ZfcDataGrid\Service\UserSettingsService;
 use Popov\ZfcDataGridPlugin\Service\Plugin\DataGridPluginFactory;
 use Popov\ZfcDataGridPlugin\Service\Plugin\DataGridPluginManager;
-use Popov\ZfcUser\Form\User;
 use Popov\ZfcUser\Helper\UserHelper;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\Stdlib\InitializableInterface;
