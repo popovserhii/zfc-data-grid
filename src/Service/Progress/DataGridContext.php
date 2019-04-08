@@ -9,18 +9,20 @@
  */
 namespace Popov\ZfcDataGrid\Service\Progress;
 
-use Zend\Mvc\I18n\Translator;
+use Doctrine\ORM\EntityManager;
+use Zend\I18n\Translator\TranslatorInterface;
 use Zend\I18n\Translator\TranslatorAwareTrait;
 use DoctrineModule\Persistence\ObjectManagerAwareInterface;
 use DoctrineModule\Persistence\ProvidesObjectManager;
-use Popov\Progress\Service\ContextInterface;
-use Magere\ZfcEntity\Controller\Plugin\ModulePlugin;
-use Magere\ZfcEntity\Controller\Plugin\EntityPlugin;
-use Magere\Fields\Service\FieldsService;
-use Popov\Simpler\Plugin\SimplerPlugin;
+use Stagem\ZfcProgress\Service\ContextInterface;
+use Popov\ZfcUser\Model\User;
+use Popov\Simpler\SimplerHelper;
+use Popov\ZfcEntity\Helper\ModuleHelper;
+use Popov\ZfcEntity\Helper\EntityHelper;
+use Popov\ZfcFields\Service\FieldsService;
 
 /**
- * @method Translator getTranslator()
+ * @method TranslatorInterface getTranslator()
  */
 class DataGridContext implements ContextInterface, ObjectManagerAwareInterface
 {
@@ -30,43 +32,60 @@ class DataGridContext implements ContextInterface, ObjectManagerAwareInterface
 
     protected $event;
 
-    /** @var ModulePlugin */
-    protected $modulePlugin;
+    protected $user;
+    
+    /** @var ModuleHelper */
+    protected $moduleHelper;
 
-    /** @var SimplerPlugin */
-    protected $simplerPlugin;
+    /** @var SimplerHelper */
+    protected $simplerHelper;
 
     /** @var FieldsService */
     protected $fieldsService;
 
-    public function __construct(ModulePlugin $modulePlugin, SimplerPlugin $simplerPlugin, FieldsService $fieldsService)
+    public function __construct(ModuleHelper $moduleHelper, SimplerHelper $simplerHelper, FieldsService $fieldsService)
     {
-        $this->modulePlugin = $modulePlugin;
-        $this->simplerPlugin = $simplerPlugin;
+        $this->moduleHelper = $moduleHelper;
+        $this->simplerHelper = $simplerHelper;
         $this->fieldsService = $fieldsService;
     }
 
-    public function getModulePlugin()
+    public function getModuleHelper()
     {
-        return $this->modulePlugin;
+        return $this->moduleHelper;
     }
 
     /**
-     * @return EntityPlugin
+     * @return EntityHelper
      */
-    public function getEntityPlugin()
+    public function getEntityHelper()
     {
-        return $this->modulePlugin->getEntityPlugin();
+        return $this->moduleHelper->getEntityHelper();
     }
 
-    public function getSimplerPlugin()
+    /**
+     * @return SimplerHelper
+     */
+    public function getSimplerHelper()
     {
-        return $this->simplerPlugin;
+        return $this->simplerHelper;
     }
 
     public function getFieldsService()
     {
         return $this->fieldsService;
+    }
+
+    public function setUser(User $user)
+    {
+        $this->user = $user;
+        
+        return $this;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
     }
 
     public function setEvent($event)
@@ -89,24 +108,35 @@ class DataGridContext implements ContextInterface, ObjectManagerAwareInterface
         return [];
     }
 
+    public function getDescription()
+    {
+        return '';
+    }
+
     public function getMessage()
     {
+        /** @var EntityManager $om */
         $om = $this->getObjectManager();
         $uow = $om->getUnitOfWork();
-        $uow->computeChangeSets(); // do not compute changes if inside a listener
-        $changeSet = $uow->getEntityChangeSet($item = $this->getItem());
+        //$uow->computeChangeSets(); // do not compute changes if inside a listener
+
+        $item = $this->getItem();
+        $class = $om->getClassMetadata(get_class($item));
+        $uow->recomputeSingleEntityChangeSet($class, $item);
+
+        $changeSet = $uow->getEntityChangeSet($item);
 
         $message = [];
         if ($changeSet) {
             $translator = $this->getTranslator();
-            $module = $this->getModulePlugin()->setRealContext($item)->getRealModule();
-            $entity = $this->getEntityPlugin()->setContext($item)->getEntity();
-            $fields = $this->getSimplerPlugin()
+            $module = $this->getModuleHelper()->setRealContext($item)->getModule();
+            $entity = $this->getEntityHelper()->setContext($item)->getEntity();
+            $fields = $this->getSimplerHelper()
                 ->setContext($this->getFieldsService()->getAllByEntity($entity))
                 ->asAssociate('mnemo');
 
             $message[] = $translator->translate(
-                ucfirst($entity->getMnemo()) . ' edited',
+                ucfirst($entity->getMnemo()) . ' was edited',
                 $module->getName(),
                 $translator->getFallbackLocale()
             );
@@ -123,10 +153,24 @@ class DataGridContext implements ContextInterface, ObjectManagerAwareInterface
                     $this->getTranslatorTextDomain(),
                     $translator->getFallbackLocale()
                 );
-                $message[] = sprintf($template, $fieldName, $set[0], $set[1]);
+                $message[] = sprintf(
+                    $template,
+                    $fieldName,
+                    $this->prepareSetValue($set[0]),
+                    $this->prepareSetValue($set[1])
+                );
             }
         }
 
         return implode("\n", $message);
+    }
+
+    protected function prepareSetValue($value)
+    {
+        if (!is_scalar($value) && $this->getEntityHelper()->isDoctrineObject($value)) {
+            $value = $value->getId();
+        }
+
+        return $value;
     }
 }
