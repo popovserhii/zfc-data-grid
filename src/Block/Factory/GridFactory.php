@@ -18,7 +18,6 @@ use Popov\ZfcDataGrid\Block\AbstractGrid;
 use Popov\ZfcDataGrid\Service\UserSettingsService;
 use Popov\ZfcDataGridPlugin\Service\Plugin\DataGridPluginFactory;
 use Popov\ZfcDataGridPlugin\Service\Plugin\DataGridPluginManager;
-use Popov\ZfcUser\Form\User;
 use Popov\ZfcUser\Helper\UserHelper;
 use Zend\ServiceManager\Factory\AbstractFactoryInterface;
 use Zend\Stdlib\InitializableInterface;
@@ -80,7 +79,7 @@ class GridFactory implements AbstractFactoryInterface {
         $grid->setTranslator($translator);
         $grid->setToolbarTemplate('grid/toolbar');
         $grid->setDefaultItemsPerPage(25);
-        //$grid->setUrl($urlPlugin->fromRoute($route->getMatchedRouteName(), $url));
+
         $grid->setUrl($urlHelper->generate(
             $currentHelper->currentRouteName(),
             $currentHelper->currentRouteParams()

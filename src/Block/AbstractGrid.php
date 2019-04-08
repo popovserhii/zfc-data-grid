@@ -45,13 +45,18 @@ abstract class AbstractGrid
     protected $backButtonTitle = 'Back';
 
     /**
-     * Grid id accord to entity mnemo
+     * Unique Grid ID (mnemo)
      *
      * @var string
      */
     protected $id = '';
 
     protected $actions = [];
+
+    public function setId($id)
+    {
+        $this->getDataGrid()->setId($id);
+    }
 
     public function getId()
     {
@@ -125,7 +130,7 @@ abstract class AbstractGrid
      */
     final public function initialize()
     {
-        $this->dataGrid->setId($this->id);
+        $this->setId($this->id);
 
         $this->initDefault();
         $this->initToolbarCallback();
