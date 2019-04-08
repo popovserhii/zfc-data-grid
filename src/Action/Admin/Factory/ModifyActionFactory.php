@@ -25,10 +25,6 @@ class ModifyActionFactory
         #$router = $container->get('Router');
         #$request = $container->get('Request');
 
-        // Get the router match
-        #$route = $router->match($request);
-        //$this->slug = $route->getParam("slug");
-
         $params = $currentHelper->currentRouteParams();
         //if (!($gridId = $params['id'])) {
         if (!($gridId = $params['grid'])) {
@@ -40,14 +36,10 @@ class ModifyActionFactory
         $girdHelper = $container->get(GridHelper::class);
         $entityHelper = $container->get(EntityHelper::class);
 
-        //$om = $container->get(EntityManager::class);
         //$hydrator = new DoctrineObject($om);
-        
         //$domainService = $container->get(ucfirst($gridId) . 'Service');
 
-        //$action = new ModifyAction($domainService, $entityHelper);
         $action = new ModifyAction($girdHelper, $entityHelper);
-        //$controller->setServiceManager($sm);
 
         return $action;
     }

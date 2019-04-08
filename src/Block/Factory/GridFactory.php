@@ -24,13 +24,10 @@ use Zend\Stdlib\InitializableInterface;
 use Zend\ServiceManager\Exception;
 use Zend\I18n\Translator\TranslatorInterface;
 use Zend\I18n\Translator\TranslatorAwareInterface;
-use Zend\View\HelperPluginManager;
 
 use Popov\ZfcDataGridPlugin\Column\Factory\ColumnFactory;
 use Popov\ZfcBlock\Plugin\BlockPluginManager;
-//use Popov\ZfcBlock\Block\Admin\ActionPanel;
 use Popov\ZfcCurrent\CurrentHelper;
-use Popov\Simpler\SimplerHelper;
 use ZfcDatagrid\Datagrid;
 
 class GridFactory implements AbstractFactoryInterface {
@@ -55,9 +52,7 @@ class GridFactory implements AbstractFactoryInterface {
         $translator = $container->get(TranslatorInterface::class);
 		$config = $container->get('config');
 		$om = $container->get(EntityManager::class);
-		//$cpm = $container->get('ControllerPluginManager');
-		//$vhm = $container->get(HelperPluginManager::class);
-		//$renderer = $container->get('ViewRenderer');
+
         /** @var BlockPluginManager $bpm */
 		$bpm = $container->get('BlockPluginManager');
         /** @var DataGridPluginManager $cpm */
@@ -67,10 +62,8 @@ class GridFactory implements AbstractFactoryInterface {
 		/** @var CurrentHelper $currentHelper */
 		$currentHelper = $container->get(CurrentHelper::class);
 
-
 		/** @var UserSettingsService $userSettingsService */
         $userSettingsService = $container->get(UserSettingsService::class);
-
 
         /** @var Datagrid $grid */
 		$grid = clone $container->get('ZfcDatagrid\Datagrid');
