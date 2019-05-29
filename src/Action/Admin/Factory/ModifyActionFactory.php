@@ -8,12 +8,12 @@
 namespace Popov\ZfcDataGrid\Action\Admin\Factory;
 
 use Doctrine\ORM\EntityManager;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
 use Popov\ZfcDataGrid\GridHelper;
 use Zend\Stdlib\Exception;
 use Psr\Container\ContainerInterface;
 use Popov\ZfcCurrent\CurrentHelper;
 use Popov\ZfcEntity\Helper\EntityHelper;
-use Popov\ZfcDataGrid\Hydrator\DoctrineObject;
 use Popov\ZfcDataGrid\Action\Admin\ModifyAction;
 
 class ModifyActionFactory
@@ -22,9 +22,6 @@ class ModifyActionFactory
     {
         $currentHelper = $container->get(CurrentHelper::class);
 
-        #$router = $container->get('Router');
-        #$request = $container->get('Request');
-
         $params = $currentHelper->currentRouteParams();
         //if (!($gridId = $params['id'])) {
         if (!($gridId = $params['grid'])) {
@@ -32,14 +29,14 @@ class ModifyActionFactory
                 'Route key "grid" must be set for correct work edit functionality'
             );
         }
-
         $girdHelper = $container->get(GridHelper::class);
         $entityHelper = $container->get(EntityHelper::class);
+        $om = $entityHelper->getObjectManager();
 
-        //$hydrator = new DoctrineObject($om);
+        $hydrator = new DoctrineHydrator($om);
         //$domainService = $container->get(ucfirst($gridId) . 'Service');
 
-        $action = new ModifyAction($girdHelper, $entityHelper);
+        $action = new ModifyAction($girdHelper, $entityHelper, $hydrator);
 
         return $action;
     }

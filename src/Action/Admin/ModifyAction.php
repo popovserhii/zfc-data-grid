@@ -18,16 +18,15 @@ use Psr\Http\Message\ServerRequestInterface;
 use Interop\Http\ServerMiddleware\MiddlewareInterface;
 use Interop\Http\Server\RequestHandlerInterface;
 use Fig\Http\Message\RequestMethodInterface;
+use DoctrineModule\Stdlib\Hydrator\DoctrineObject as DoctrineHydrator;
+use Stagem\Report\Model\Attribute;
 use Zend\Diactoros\Response\JsonResponse;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\EventManager\EventManagerAwareTrait;
 use Zend\Stdlib\Exception;
-use Zend\View\Model\ViewModel;
-use Zend\View\Model\JsonModel;
 use Popov\ZfcCore\Service\DomainServiceInterface;
 use Popov\ZfcEntity\Model\Entity;
 use Popov\ZfcEntity\Helper\EntityHelper;
-use Doctrine\Common\Collections\ArrayCollection;
 /**
  * @method EntityHelper entity()
  */
@@ -50,11 +49,16 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface, Event
      */
     protected $gridHelper;
 
-    public function __construct(GridHelper $gridHelper, EntityHelper $entityHelper)
+    /**
+     * @var DoctrineHydrator
+     */
+    protected $doctrineHydrator;
+
+    public function __construct(GridHelper $gridHelper, EntityHelper $entityHelper, DoctrineHydrator $doctrineHydrator)
     {
-        //$this->domainService = $entityService;
         $this->gridHelper = $gridHelper;
         $this->entityHelper = $entityHelper;
+        $this->doctrineHydrator = $doctrineHydrator;
     }
 
     public function getGridHelper()
@@ -65,6 +69,11 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface, Event
     public function getEntityHelper()
     {
         return $this->entityHelper;
+    }
+
+    public function getDoctrineHydrator()
+    {
+        return $this->doctrineHydrator;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -95,45 +104,23 @@ class ModifyAction implements MiddlewareInterface, RequestMethodInterface, Event
         $gridHelper = $this->getGridHelper();
         $entityHelper = $this->getEntityHelper();
         $om = $entityHelper->getObjectManager();
+        $doctrineHydrator = $this->getDoctrineHydrator();
         $params = $request->getParsedBody();
         $operation = $params['oper'];
 
-        $gridData = $gridHelper->prepareExchangeData($request);
+        $gridData = $gridHelper->prepareExchangeData($params);
 
-        $items = [];
+        /** @var Entity[] $entities */
         $entities = $om->getRepository(Entity::class)->findBy(['mnemo' => array_keys($gridData)]);
+        $items = [];
         foreach ($entities as $entity) {
-            foreach ($gridData[$entity->getMnemo()] as $itemId => $entityData) {
+            foreach ($gridData[$entity->getMnemo()] as $itemId => $itemData) {
                 $item = $entityHelper->find($itemId, $entity, EntityHelper::CREATE_EMPTY);
+
                 $params = ['context' => $this, 'gridData' => $params, 'entity' => $entity];
-                // @todo fix ProgressContext
                 $this->getEventManager()->trigger($operation . '.on', $item, $params);
 
-                // @todo Hardcode. Implement Doctrine Hydrator
-                foreach ($entityData as $property => $value) {
-                    if (method_exists($item, $method = 'set' . ucfirst($property))) {
-                        if ('marketOrder' == $property && !$value) {
-                            $value = null;
-                        }
-                        $item->{$method}($value);
-                    } elseif (method_exists($item, $method = 'add' . ucfirst($property))) {
-                        $getMethod = 'get' . ucfirst($property) . 's';
-                        $subEntity = $entityHelper->getBy($property, 'mnemo');
-                        $item->{$getMethod}()->clear(); // this don't work
-                        //$removeMethod = 'remove' . ucfirst($property);
-                        if (!empty($value)) {
-                            $value = is_array($value) ? $value : [$value];
-
-                            /*foreach ($item->g as $subValue) {
-                                $item->{$removeMethod}($om->find($subEntity->getNamespace(), $subValue));
-                            }*/
-
-                            foreach ($value as $subValue) {
-                                $item->{$method}($om->find($subEntity->getNamespace(), $subValue));
-                            }
-                        }
-                    }
-                }
+                $item = $doctrineHydrator->hydrate($itemData, $item);
 
                 $this->getEventManager()->trigger($operation, $item, $params);
             }
