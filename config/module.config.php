@@ -83,6 +83,7 @@ return [
             'zfc-datagrid/renderer/jqGrid/layout' => __DIR__ . '/../view/grid/layout.phtml',
             'zfc-datagrid/renderer/jqGrid/footer' => __DIR__ . '/../view/grid/footer.phtml',
             'zfc-datagrid/renderer/jqGrid/buttons' => __DIR__ . '/../view/grid/buttons.phtml',
+            'zfc-datagrid/renderer/jqGrid/summarizer' => __DIR__ . '/../view/grid/summarizer.phtml',
             'zfc-datagrid/toolbar/export' => __DIR__ . '/../view/grid/export.phtml',
         ],
         'template_path_stack' => [

@@ -1,0 +1,36 @@
+<?php if (!isset($qb) || !isset($columns) || !isset($gridId)) : ?>
+    <?php return; ?>
+<?php endif; ?>
+
+<script>
+<?php $request = $this->current('request') ?>
+<?php if (!$request->hasHeader('X-Requested-With')) : ?>
+<?php $this->inlineScript()->captureStart(); ?>
+<?php endif; ?>
+
+    <?php
+        $grid = '#' . $gridId . '_grid';
+        $summarizer = $this->gridSummarizer()->getSummarizer();
+        $summarizer->setDataSource($qb);
+
+        $totals = [];
+        foreach ($columns as $column) {
+            if (isset($column->getRendererParameters()['summarizer'])) {
+                $summarizer->setSelect($column);
+                $totals = $summarizer->summarize($column->getRendererParameters()['summarizer']);
+            }
+        }
+    ?>
+
+    jQuery(document).ready(function ($) {
+        <?php foreach ($totals as $field => $total) : ?>
+            $("<?php echo $grid ?>").jqGrid('footerData', 'set', { <?php echo $field?>: <?php echo $total?> });
+        <?php endforeach; ?>
+    });
+
+<?php if (!$request->hasHeader('X-Requested-With')) : ?>
+<?php $this->inlineScript()->captureEnd(); ?>
+<?php endif; ?>
+</script>
+
+

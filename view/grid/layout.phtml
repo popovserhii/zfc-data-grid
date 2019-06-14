@@ -261,23 +261,11 @@ $(document).ready(function () {
         sortname: '<?php echo $this->activeParameters[$parameterNames['sortColumns']]; ?>',
         sortorder: '<?php echo $this->activeParameters[$parameterNames['sortDirections']]; ?>',
 
-        footerrow: <?= isset($this->gridFooterRow['total']) ? (int) $this->gridFooterRow : 0 ?>,
+        footerrow: <?= isset($this->gridFooterRow) ? (int) $this->gridFooterRow : 0 ?>,
         userDataOnFooter: <?= isset($this->userDataOnFooter) ? (int) $this->userDataOnFooter : 0 ?>,
 
       gridComplete: function () {
          $(this).trigger('jqGrid.gridComplete');
-
-          <?php if (isset($this->gridFooterRow['total'])) : ?>
-	        var gridTotal = $('#<?php echo $this->gridId; ?>_grid');
-	        var colSum = gridTotal.jqGrid('getCol', '<?php echo $this->gridFooterRow['total']?>', false, 'sum');
-	        gridTotal.jqGrid('footerData', 'set',
-	          {
-	              <?php if (isset($this->gridFooterRow['labelField'])) : ?>
-	            '<?php echo $this->gridFooterRow['labelField']?>': 'Total: ',
-	              <?php endif; ?>
-	            '<?php echo $this->gridFooterRow['total']?>': Number.parseFloat(colSum).toFixed(2)
-	          });
-          <?php endif; ?>
       },
 
         prmNames : {
@@ -534,3 +522,9 @@ $(document).ready(function () {
     'navButtons' => $this->navButtons,
     'gridId' => $this->gridId,
 ]) ?>
+
+<?php echo $this->partial('zfc-datagrid/renderer/jqGrid/summarizer', [
+		'gridId' => $this->gridId,
+		'qb' => $paginator->getAdapter()->getQueryBuilder(),
+		'columns' => $this->columns
+])?>
