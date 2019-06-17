@@ -17,7 +17,7 @@
         foreach ($columns as $column) {
             if (isset($column->getRendererParameters()['summarizer'])) {
                 $summarizer->setSelect($column);
-                $totals = $summarizer->summarize($column->getRendererParameters()['summarizer']);
+                $totals[$column->getUniqueId()] = $summarizer->summarize($column->getRendererParameters()['summarizer']);
             }
         }
     ?>
