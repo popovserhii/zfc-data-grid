@@ -14,12 +14,15 @@
         $summarizer->setDataSource($qb);
 
         $totals = [];
+        $summaryColumns = [];
         foreach ($columns as $column) {
             if (isset($column->getRendererParameters()['summarizer'])) {
-                $summarizer->setSelect($column);
-                $totals[$column->getUniqueId()] = $summarizer->summarize($column->getRendererParameters()['summarizer']);
+                $summaryColumns[] = $column;
             }
         }
+
+    $summarizer->setSelect($summaryColumns);
+    $totals = $summarizer->summarize();
     ?>
 
     jQuery(document).ready(function ($) {
